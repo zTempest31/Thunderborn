@@ -1,1 +1,1 @@
-Thunderborn made by zTempest31
+Idle game i made for fun
