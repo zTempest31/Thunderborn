@@ -669,7 +669,6 @@ body.tab-minimized *,body.tab-minimized *::before,body.tab-minimized *::after{
  filter:drop-shadow(0 0 4px var(--pal-main))!important;
  animation:permanentDiamondGlow 2.4s ease-in-out infinite!important;
 }
-.tab[data-page="relics"] span,
 .tab.relic-diamond-glow span{
  display:block!important;
  font-size:18px!important;
@@ -1591,10 +1590,10 @@ body.simplified-stats .stat-val-line{
  <div class="section">
   <div class="sectionhead"><h2>Verlorene Chroniken</h2><span class="small">Lore</span></div>
   <div class="storybox"><h3>Die Erste Ära</h3>Vor tausend Jahren kämpfte Vaelith, die Sturmgeborene, gegen <em>Aureon, den Ewigen</em>. Sie zerschlug seine himmlischen Festungen – doch am Ende wurde sie versiegelt und aus der Geschichte getilgt.<br><br>Jetzt erwacht sie in einer Welt, die ihren Namen vergessen hat. Doch etwas erinnert sich.<br><br><em>„Du hättest niemals zurückkehren dürfen.“</em></div>
-  <div class="sectionhead" style="margin-top:18px"><h2>I & II · Echos alter Freundinnen</h2><span class="small" id="rivalStatusBadge">5,00M & 10,00M Furcht</span></div>
+  <div class="sectionhead" style="margin-top:18px"><h2>Echos alter Freundinnen</h2><span class="small" id="rivalStatusBadge">5,00M & 10,00M Furcht</span></div>
   <div class="card rival-card" id="rivalDialogueCard"></div>
   <div class="card rival-card" id="friend2DialogueCard" style="margin-top:10px"></div>
-  <div class="sectionhead" style="margin-top:18px"><h2>III · Stimme vom Ewigen Thron</h2><span class="small" id="aureonStatusBadge">Ab 30,00M Götterfurcht</span></div>
+  <div class="sectionhead" style="margin-top:18px"><h2>Stimme vom Ewigen Thron</h2><span class="small" id="aureonStatusBadge">Ab 30,00M Götterfurcht</span></div>
   <div class="card rival-card aureon-card" id="aureonDialogueCard"></div>
   <div class="sectionhead" style="margin-top:18px"><h2>Begegnungen der Sterblichen</h2><span class="small" id="encounterStatusBadge">Welt der Menschen</span></div>
   <div class="card" id="mortalEncounterCard"></div>
@@ -2854,7 +2853,7 @@ function render(){
        <span class="relic-lore-toggle">${isExp?'📖 Lore einklappen ▴':'📖 Lore anzeigen ▾'}</span>
       </div>
      </div>
-     <span class="${owned?'relic-diamond-perm':''}" style="color:${owned?'#ffffff':'#66677e'};font-size:20px;flex-shrink:0">${owned?'◈':'◇'}</span>
+     <span class="${owned&&allRelicsOwned?'relic-diamond-perm':''}" style="color:${owned?'var(--violet)':'#66677e'};font-size:20px;flex-shrink:0">${owned?'◈':'◇'}</span>
     </div>
     <div class="relic-lore-box ${isExp?'open':''}">${r.lore}</div>
    </div>`;
@@ -2906,7 +2905,7 @@ function render(){
      <div class="rival-header clickable-toggle ${rivalExpanded?'expanded':''}" id="rivalHeaderToggle">
       ${lyseraAvatarSvg}
       <div style="min-width:0;flex:1">
-       <div class="rival-name">I · Unbekannte Resonanz aus der Ersten Ära</div>
+       <div class="rival-name">Unbekannte Resonanz aus der Ersten Ära</div>
        <div class="rival-sub">Einstige beste Freundin & Schwurrivalin · Noch getrennt</div>
       </div>
       <span class="collapse-badge">${rivalExpanded?'Einklappen ▴':'Aufklappen ▾'}</span>
@@ -2959,7 +2958,7 @@ function render(){
      <div class="rival-header clickable-toggle ${rivalExpanded?'expanded':''}" id="rivalHeaderToggle">
       ${lyseraAvatarSvg}
       <div style="min-width:0;flex:1">
-       <div class="rival-name">I · Lysera, die Dämmerungsklinge</div>
+       <div class="rival-name">Lysera, die Dämmerungsklinge</div>
        <div class="rival-sub">Beste Freundin & Ewige Rivalin aus der Ersten Ära</div>
       </div>
       <span class="collapse-badge">${rivalExpanded?'Einklappen ▴':'Aufklappen ▾'}</span>
@@ -3013,7 +3012,7 @@ function render(){
      <div class="rival-header clickable-toggle ${friend2Expanded?'expanded':''}" id="friend2HeaderToggle">
       ${seraphinaAvatarSvg}
       <div style="min-width:0;flex:1">
-       <div class="rival-name">II · Ferne Resonanz im Ewigen Zeitriss</div>
+       <div class="rival-name">Ferne Resonanz im Ewigen Zeitriss</div>
        <div class="rival-sub">Zweite Vertraute aus der Ersten Ära · Ab 10,00M Götterfurcht</div>
       </div>
       <span class="collapse-badge">${friend2Expanded?'Einklappen ▴':'Aufklappen ▾'}</span>
@@ -3066,7 +3065,7 @@ function render(){
      <div class="rival-header clickable-toggle ${friend2Expanded?'expanded':''}" id="friend2HeaderToggle">
       ${seraphinaAvatarSvg}
       <div style="min-width:0;flex:1">
-       <div class="rival-name">II · Seraphina, die Sternenweberin</div>
+       <div class="rival-name">Seraphina, die Sternenweberin</div>
        <div class="rival-sub">Hüterin deiner wahren Chroniken & Vertraute der Ersten Ära</div>
       </div>
       <span class="collapse-badge">${friend2Expanded?'Einklappen ▴':'Aufklappen ▾'}</span>
@@ -3113,7 +3112,7 @@ function render(){
      <div class="rival-header clickable-toggle ${aureonExpanded?'expanded':''}" id="aureonHeaderToggle">
       ${aureonAvatarSvg}
       <div style="min-width:0;flex:1">
-       <div class="rival-name" style="color:#ffd88a">III · Versiegelter Thron von Aureon</div>
+       <div class="rival-name" style="color:#ffd88a">Versiegelter Thron von Aureon</div>
        <div class="rival-sub" style="color:#ffb3c6">Der Ewige Gott · Direkte Stimme ab 30,00M Götterfurcht</div>
       </div>
       <span class="collapse-badge">${aureonExpanded?'Einklappen ▴':'Aufklappen ▾'}</span>
@@ -3166,7 +3165,7 @@ function render(){
      <div class="rival-header clickable-toggle ${aureonExpanded?'expanded':''}" id="aureonHeaderToggle">
       ${aureonAvatarSvg}
       <div style="min-width:0;flex:1">
-       <div class="rival-name" style="color:#ffd88a">III · Aureon, der Ewige</div>
+       <div class="rival-name" style="color:#ffd88a">Aureon, der Ewige</div>
        <div class="rival-sub" style="color:#ffb3c6">Herrscher des falschen Lichts · Direkte Stimme vom Götterthron</div>
       </div>
       <span class="collapse-badge">${aureonExpanded?'Einklappen ▴':'Aufklappen ▾'}</span>
@@ -3198,8 +3197,7 @@ function render(){
   const encCard=$('mortalEncounterCard');
   const loreTabBtn=document.querySelector('.tab[data-page="lore"]');
   if(loreTabBtn){
-   const baseLabel='<span>☽</span>Chroniken';
-   loreTabBtn.innerHTML=(state.activeEncounter||hasUnreadRival||hasUnreadFriend2||hasUnreadAureon)?baseLabel+'<i class="tab-dot"></i>':baseLabel;
+   loreTabBtn.innerHTML='<span>☽</span>Chroniken';
   }
   const seenCount=Array.isArray(state.seenEncounterIds)?state.seenEncounterIds.length:0;
   if($('encounterStatusBadge')){
@@ -5664,11 +5662,12 @@ const changelogHistoryData=[
   version:'0.4.8',
   tag:'Aktueller Patch',
   changes:[
-   'Relikte-Tab Drückbereich & Button-Geometrie exakt an alle anderen Tabs angepasst (kein vergrößerter Hitbox-Bereich mehr durch das leuchtende Karo).',
+   'Relikte-Tab Drückbereich & Button-Geometrie exakt an alle anderen Tabs angepasst; das Karo (◇ / ◈) leuchtet nur dann auf, wenn alle 8 Relikte eingesammelt wurden.',
    'Browser Force-Dark-Mode Schutz verstärkt (color-scheme: only dark & -webkit-forced-color-adjust: none).',
    'Automatischer Daily Login: Beim ersten Einloggen an einem neuen lokalen Kalendertag (oder um 00:00 Uhr lokaler Zeit) wird die Belohnung sofort automatisch gutgeschrieben.',
    'Druckstufen angepasst: MAX DRUCK startet ab 1,00M Götterfurcht. Ab 300,00M wird der Zusatz „MAX DRUCK“ im Text ausgeblendet (alle Effekte bleiben voll aktiv) und der Rang „☠ TRANSZENDENTE URGÖTTIN ☠“ erscheint in einer bedrohlich pulsierenden Aura.',
-   'Römische Zahlen (I · Lysera, II · Seraphina, III · Aureon sowie römische Kapitelnummern) in den Chroniken ergänzt.'
+   'Römische Kapitelnummern (I bis VI) bei den gesperrten Kapiteln von Seraphina und Aureon ergänzt (Sektionsüberschriften bleiben ohne römische Zahlen).',
+   'Leuchtpunkt am Chroniken-Tab entfernt.'
   ]
  },
  {
