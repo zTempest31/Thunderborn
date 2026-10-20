@@ -19,7 +19,10 @@
 <title>THUNDERBORN 0.5.1 — The Forgotten Goddess</title>
 <style>
 :root{--bg:#080810;--panel:#11121d;--panel2:#171827;--line:#2b2c43;--text:#f2f0ff;--muted:#9a9bb5;--violet:#a879ff;--pink:#ed8bff;--cyan:#8fe8ff;--gold:#ffd88a;--green:#9ff0c2}
-:root,html,body{color-scheme:dark only!important;color-scheme:dark!important;forced-color-adjust:none!important;-webkit-forced-color-adjust:none!important;background-color:#080810!important}*,*::before,*::after{box-sizing:border-box;color-scheme:dark!important;forced-color-adjust:none!important;-webkit-forced-color-adjust:none!important}html{background:var(--bg)}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#252044 0%,#0b0b15 46%,#07070c 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;padding:0 0 calc(78px + env(safe-area-inset-bottom));}
+:root,html,body{color-scheme:dark only!important;color-scheme:dark!important;forced-color-adjust:none!important;-webkit-forced-color-adjust:none!important;background-color:#080810!important}*,*::before,*::after{box-sizing:border-box;color-scheme:dark!important;forced-color-adjust:none!important;-webkit-forced-color-adjust:none!important}
+/* Samsung Internet Auto-Dark-Mode / Force-Dark Gegen-Filter (wird automatisch aktiv, falls der Browser die Hintergrundfarbe invertiert) */
+html.samsung-dark-fix{filter:invert(1) hue-rotate(180deg)!important;background:#f7f7ef!important}
+html.samsung-dark-fix img,html.samsung-dark-fix canvas,html.samsung-dark-fix svg{filter:invert(1) hue-rotate(180deg)!important}html{background:var(--bg)}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#252044 0%,#0b0b15 46%,#07070c 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;padding:0 0 calc(78px + env(safe-area-inset-bottom));}
 button{font:inherit;color:inherit;cursor:pointer} .app{max-width:540px;margin:0 auto;min-height:100vh;position:relative}
 header{padding:20px 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .logo{font-size:11px;letter-spacing:.24em;color:var(--violet);font-weight:800}.subtitle{font-size:10px;letter-spacing:.12em;color:var(--muted);margin-top:3px}
@@ -1569,9 +1572,60 @@ body.cyber-explosion::after{
  animation:cyberOverlayFlash .54s ease-out forwards;
 }
 
+
+/* === V0.5.1 NEU: AUREONS RACHE INVASION (1% LIVE EVENT), WÖCHENTLICHE ANOMALIEN & GÖTTERFURCHT-DIALOGE === */
+@keyframes aureonInvasionPulse{
+ 0%,100%{box-shadow:inset 0 0 85px rgba(190, 12, 38, 0.78), inset 0 0 150px rgba(0, 0, 0, 0.92)}
+ 50%{box-shadow:inset 0 0 115px rgba(255, 30, 66, 0.92), inset 0 0 175px rgba(0, 0, 0, 0.96)}
+}
+body.aureon-invasion-active .reiatsu-screen-vignette{
+ opacity:1!important;
+ background:
+  radial-gradient(ellipse at 50% 36%, rgba(160, 10, 30, 0.18) 0%, rgba(75, 4, 16, 0.74) 65%, rgba(8, 1, 4, 0.95) 100%)!important;
+ animation:aureonInvasionPulse 1.6s ease-in-out infinite!important;
+}
+body.aureon-invasion-active .hero{
+ border-color:#ff2a55!important;
+ box-shadow:0 0 32px rgba(255, 42, 85, 0.55), inset 0 0 28px rgba(160, 10, 30, 0.45)!important;
+}
+.invasion-active-banner{
+ margin:6px auto 2px;
+ max-width:360px;
+ padding:7px 11px;
+ border-radius:12px;
+ border:1.5px solid #ff2a55;
+ background:linear-gradient(90deg, rgba(95, 8, 24, 0.94), rgba(28, 6, 16, 0.95));
+ box-shadow:0 0 18px rgba(255, 42, 85, 0.48);
+ display:none;
+ align-items:center;
+ justify-content:space-between;
+ gap:8px;
+ font-size:10px;
+ color:#ffeef2;
+}
+.invasion-active-banner.active{
+ display:flex;
+}
+.anomaly-pill{
+ margin:5px auto 0;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:5px;
+ padding:3px 10px;
+ border-radius:99px;
+ font-size:8.8px;
+ font-weight:800;
+ letter-spacing:.04em;
+ color:#ffe8a3;
+ background:linear-gradient(90deg, rgba(68, 34, 92, 0.85), rgba(26, 16, 48, 0.9));
+ border:1px solid color-mix(in srgb, var(--gold) 60%, var(--violet));
+}
+
 </style>
 </head>
 <body>
+<audio id="ostAudio" src="ost.mp3" loop preload="auto"></audio>
 <canvas id="reiatsuCanvas" aria-hidden="true"></canvas>
 <div class="reiatsu-screen-vignette" id="reiatsuScreenVignette" aria-hidden="true"></div>
 <div class="app">
@@ -1700,8 +1754,13 @@ body.cyber-explosion::after{
    <div class="name">Vaelith</div><div class="epithet" id="characterTitleDisplay">Die Sturmgeborene</div>
    <div class="fear-banner" title="Die Furcht der Götter wächst automatisch mit deiner gesamten Macht, deinen Siegen, Upgrades und Relikten"><span class="fear-icon">👁</span><span class="fear-label">Götterfurcht</span><span class="fear-val" id="fearValueDisplay">10</span><span class="fear-rank" id="fearRankDisplay">Unbekannte Sterbliche</span></div>
    <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap">
-    <div class="lore-buff-pill" id="loreBuffPill" title="Temporärer Segen oder Zorn aus deiner letzten Begegnung der Sterblichen"></div>
+    <div class="anomaly-pill" id="weeklyAnomalyPill" title="Aktive Wöchentliche Anomalie (wechselt jede Kalenderwoche automatisch)"></div>
+    <div class="lore-buff-pill" id="loreBuffPill" title="Temporärer Segen oder Zorn aus deinen Chronik- & Götterfurcht-Entscheidungen"></div>
     <div class="lore-buff-pill" id="companionActivePill" title="Aktives Echo an Vaeliths Seite (Chroniken)"></div>
+   </div>
+   <div class="invasion-active-banner" id="invasionActiveBanner">
+    <div><strong style="color:#ff708d">🩸 AUREONS RACHE · LIVE-INVASION!</strong><div style="font-size:9px;color:#ffd166" id="invasionSubText">Ein Vorbote von Aureon, dem Ewigen ist erschienen!</div></div>
+    <span style="font-size:10px;font-weight:800;color:#ffffff">1% EVENT</span>
    </div>
    <div class="trial-active-banner" id="trialActiveBanner">
     <div><strong style="color:#ffd166">⚔ PRÜFUNG DER VERGANGENHEIT</strong><div style="font-size:9px;color:var(--cyan)" id="trialDmgText">Schaden: 0 · Belohnung: +1 Echo</div></div>
@@ -1771,11 +1830,15 @@ body.cyber-explosion::after{
 <section class="page" id="page-prestige">
  <div class="section">
   <div class="sectionhead"><h2>Echo der Ewigkeit</h2><span class="small">Prestige</span></div>
-  <div class="prestigehero"><div class="prestigeorb">✧</div><h3>Die Zeit zurücksetzen</h3><p>Verwandle deinen Fortschritt in Echos der Ewigkeit. Du beginnst erneut, doch ein Teil deiner Macht und deiner Erinnerungen bleibt bestehen.</p><div style="font-size:12px;margin-bottom:12px">Voraussichtliche Belohnung: <strong id="prestigeGain" style="color:#d6b8ff">0 Echos</strong></div><button class="primary" id="prestigeBtn">NEUEN ZEITALTERZYKLUS BEGINNEN</button><div class="notice">Erfordert mindestens Gebiet 10. Gold, Blitzessenz und Stufenfortschritt werden zurückgesetzt.</div></div>
+  <div class="prestigehero"><div class="prestigeorb">✧</div><h3>Die Zeit zurücksetzen</h3><p>Verwandle deinen Fortschritt in Echos der Ewigkeit. Du beginnst erneut, doch ein Teil deiner Macht und deiner Erinnerungen bleibt bestehen.</p><div style="font-size:12px;margin-bottom:6px">Anzahl Reinkarnationen: <strong id="reincarnationCountDisplay" style="color:var(--cyan)">0</strong></div><div style="font-size:12px;margin-bottom:12px">Voraussichtliche Belohnung: <strong id="prestigeGain" style="color:#d6b8ff">0 Echos</strong></div><button class="primary" id="prestigeBtn">NEUEN ZEITALTERZYKLUS BEGINNEN</button><div class="notice">Erfordert mindestens Gebiet 10. Gold, Blitzessenz und Stufenfortschritt werden zurückgesetzt.</div></div>
  </div>
  <div class="section">
   <div class="sectionhead"><h2>Erinnerungsbaum</h2><span class="small">Dauerhafte Verbesserungen</span></div>
   <div class="card" id="talentList"></div>
+ </div>
+ <div class="section">
+  <div class="sectionhead"><h2>Wöchentliche Anomalie</h2><span class="small" id="weeklyAnomalyWeekTag">Kalenderwoche</span></div>
+  <div class="card" id="weeklyAnomalyCard"></div>
  </div>
 </section>
 
@@ -1793,6 +1856,8 @@ body.cyber-explosion::after{
   <div class="card" id="mortalEncounterCard"></div>
   <div class="sectionhead" style="margin-top:18px"><h2>Erinnerungen & Vaeliths Echo</h2><span class="small">Reaktionen wählen</span></div>
   <div class="card" id="loreUnlocks"></div>
+  <div class="sectionhead" style="margin-top:18px"><h2>Götterfurcht-Meilensteine</h2><span class="small">Dialoge & Temporäre Buffs</span></div>
+  <div class="card" id="fearMilestoneDialoguesCard" style="margin-bottom:12px"></div>
   <div class="sectionhead" style="margin-top:18px"><h2>Meilensteine</h2><span class="small">Dauerhafte Boni</span></div>
   <div class="card" id="milestoneList"></div>
  </div>
@@ -1839,10 +1904,25 @@ body.cyber-explosion::after{
    </div>
   </div>
   <div class="card" style="margin-top:10px">
-   <h3 style="font-family:Georgia,serif;margin:0 0 4px">Klang & Atmosphäre</h3>
-   <p class="setting-note">Düstere, hallende Elektro-Resonanzen und tiefer Donner. Browser aktivieren Audio erst nach einer aktiven Eingabe.</p>
+   <h3 style="font-family:Georgia,serif;margin:0 0 4px">Klang, Hintergrundmusik (ost.mp3) & Browser-Fix</h3>
+   <p class="setting-note">Spielt standardmäßig deine <strong>ost.mp3</strong> (aus demselben Ordner wie die <code>index.html</code>) im Loop ab. Alternativ kannst du hier eine eigene MP3 hochladen und jederzeit wieder entfernen.</p>
    <div class="settings-actions" style="margin-top:10px"><button class="secondary" id="settingsSoundToggleBtn" type="button">Soundeffekte: Aus</button><button class="secondary" id="testSoundBtn" type="button">ϟ Klangprobe abspielen</button></div>
-
+   <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+     <strong style="font-size:12px">🎵 Hintergrundmusik (OST)</strong>
+     <span class="small" id="ostSourceStatusText" style="color:var(--cyan)">Quelle: Standard (ost.mp3)</span>
+    </div>
+    <button class="secondary" id="toggleOstMusicBtn" type="button" style="margin-bottom:7px">🎵 Musik (ost.mp3): An</button>
+    <div class="settings-actions">
+     <button class="secondary" id="uploadCustomMp3Btn" type="button">↑ Eigene MP3 wählen</button>
+     <button class="secondary" id="removeCustomMp3Btn" type="button">✕ MP3 entfernen (Standard ost.mp3)</button>
+    </div>
+    <input id="customMp3Input" type="file" accept="audio/mpeg,audio/mp3,audio/*" hidden>
+   </div>
+   <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">
+    <button class="secondary" id="toggleSamsungDarkFixBtn" type="button">🌙 Samsung Browser Farb-Umkehr-Schutz: Auto</button>
+    <p class="setting-note">Falls Samsung Internet die Farben im erzwungenen Dark-Mode invertiert, schaltet dieser Modus einen exakten Gegen-Filter ein, damit alle Originalfarben erhalten bleiben.</p>
+   </div>
   </div>
   <div class="card" style="margin-top:10px">
    <h3 style="font-family:Georgia,serif;margin:0 0 4px">Charakterbild</h3>
@@ -1936,7 +2016,7 @@ const state={
  talents:{memory:0,revenge:0,truth:0,divinity:0,cataclysm:0},relics:[],memories:[],kills:0,bossKills:0,
  overcharge:0,overchargeStacks:0,activeOverchargeStacks:0,overchargeActiveUntil:0,
  lastTime:Date.now(),lastPrestige:0,muted:true,characterTitle:'Die Sturmgeborene',selectedTitle:'stormborn',customTitle:'',selectedTitleEffect:'stormborn',unlockedTitles:['stormborn'],palette:'raiden',
- offlineHistory:[],memoryReactions:{},activeEncounter:null,lastEncounterOutcome:null,seenEncounterIds:[],rivalAwakened:false,rivalDialogues:{},activeRivalChapter:0,friend2Awakened:false,friend2Dialogues:{},activeFriend2Chapter:0,aureonAwakened:false,aureonDialogues:{},activeAureonChapter:0,showUpgradeValues:true,dailyLogin:{lastClaimDate:'',streak:0,totalDays:0,maxStreak:0,lastTrialDate:'',bestTrialDmg:0},activeCompanion:'',loreBuff:{type:'',label:'',until:0},mercyCount:0,wrathCount:0
+ offlineHistory:[],memoryReactions:{},activeEncounter:null,lastEncounterOutcome:null,seenEncounterIds:[],rivalAwakened:false,rivalDialogues:{},activeRivalChapter:0,friend2Awakened:false,friend2Dialogues:{},activeFriend2Chapter:0,aureonAwakened:false,aureonDialogues:{},activeAureonChapter:0,showUpgradeValues:true,dailyLogin:{lastClaimDate:'',streak:0,totalDays:0,maxStreak:0,lastTrialDate:'',bestTrialDmg:0},activeCompanion:'',loreBuff:{type:'',label:'',until:0},mercyCount:0,wrathCount:0,reincarnations:0,musicEnabled:true,customOstName:'',samsungDarkMode:'auto',fearMilestoneChoices:{},invasionActive:false
 };
 const titleData=[
  {id:'stormborn',name:'Die Sturmgeborene',fxName:'Urblitz-Schimmer (Standard)',unlock:()=>true,condition:'Von Beginn an verfügbar'},
@@ -2602,6 +2682,78 @@ const milestonesData=[
  {id:'m_stage40',name:'Erwachte Legende',desc:'Erreiche Stufe 40 (+25 % Gesamtschaden)',check:()=>state.stage>=40},
  {id:'m_echoes5',name:'Herrin der Zeitalter',desc:'Sammle 5 Ewigkeitsechos (+30 % Schaden & Gold)',check:()=>state.echoes>=5}
 ];
+const fearMilestonesData=[
+ {
+  id:'fm_5k',
+  fearReq:5000,
+  title:'5.000 Götterfurcht · Der zitternde Dorfälteste',
+  mortalPrompt:'Ein greiser Dorfältester wirft sich im Schneesturm vor dir in den Staub: „Herrin des Urblitzes! Die Priester sagten, Ihr wärt tot – doch der Himmel über unserem Tal zittert vor Eurem Namen! Verschont unser Dorf!“',
+  choices:[
+   {label:'„Steht auf. Mein Donner gilt nur Aureons falschen Tempeln.“',reply:'Der Älteste weint vor Erleichterung und lässt die Dorfglocken zu deinen Ehren läuten.',buffType:'mercy',buffLabel:'✧ Dorf-Tribut (+40% Gold & Essenz · 4 Min.)',durMs:240000},
+   {label:'„Dann betet, dass mir niemand aus eurem Tal im Weg steht.“',reply:'Die Dorfbewohner weichen ehrfürchtig zurück; deine bloße Präsenz lädt die Luft elektrisch auf.',buffType:'wrath',buffLabel:'⚡ Furcht-Resonanz (+40% Schaden & +25% Entladung · 4 Min.)',durMs:240000}
+  ]
+ },
+ {
+  id:'fm_50k',
+  fearReq:50000,
+  title:'50.000 Götterfurcht · Die Hauptfrau der Stadtwache',
+  mortalPrompt:'Vor den Toren der namenlosen Stadt senkt eine Hauptfrau der Wache mitsamt ihrem Banner die Waffen: „Fünfzigtausend Furcht … Meine Soldaten weigern sich, die Klingen gegen eine wahre Göttin zu erheben. Was befehlt Ihr uns?“',
+  choices:[
+   {label:'„Öffnet die Schatzkammern der Tempel für die Hungernden.“',reply:'Die Garnison stürmt die goldenen Speicher und teilt die Vorräte – den reinsten Tribut legen sie dir zu Füßen.',buffType:'mercy',buffLabel:'✧ Garnisons-Tribut (+45% Gold & Essenz · 4 Min.)',durMs:240000},
+   {label:'„Zerschmettert jedes Sonnensiegel an euren Mauern!“',reply:'Unter deinen Augen schlagen die Soldaten Aureons goldene Wappen von den Toren.',buffType:'wrath',buffLabel:'⚡ Banner-Bruch (+45% Schaden & +25% Entladung · 4 Min.)',durMs:240000}
+  ]
+ },
+ {
+  id:'fm_250k',
+  fearReq:250000,
+  title:'250.000 Götterfurcht · Der abtrünnige Erzbischof',
+  mortalPrompt:'Auf den Stufen der Kathedrale der Lüge reißt sich ein Erzbischof die goldene Stola vom Leib: „Viertelmillion Götterfurcht! Das Ewige Licht flackert wie eine sterbende Kerze! Nehmt mein Wissen über die alten Siegel, Sturmgeborene!“',
+  choices:[
+   {label:'„Verbreite unter den Sterblichen die Wahrheit der Ersten Ära.“',reply:'Seine Predigten lassen ganze Provinzen von Aureon abfallen und dir freiwillig Tribut senden.',buffType:'mercy',buffLabel:'✧ Ketzer-Opfergabe (+50% Gold & Essenz · 5 Min.)',durMs:300000},
+   {label:'„Verbrenne die falschen Schriften mit meinem Urblitz!“',reply:'Die violetten Flammen der verlogenen Dogmen nähren deinen Zorn unmittelbarer als jedes Gebet.',buffType:'wrath',buffLabel:'⚡ Kathedralen-Brand (+50% Schaden & +30% Entladung · 5 Min.)',durMs:300000}
+  ]
+ },
+ {
+  id:'fm_1m',
+  fearReq:1000000,
+  title:'1,00M Götterfurcht · Der letzte sterbliche König',
+  mortalPrompt:'Bei einer Million Götterfurcht (MAX DRUCK) kniet der letzte sterbliche Großkönig des Nordens ohne Krone vor dir nieder: „Ganze Königreiche ersticken unter Eurem Reiatsu, Vaelith. Nehmt meine Krone – oder unser Schwert!“',
+  choices:[
+   {label:'„Behalte deine Krone, König – doch regiere fortan in meinem Namen.“',reply:'Alle Steuern und Essenzen des Nordreichs fließen direkt in deine Kriegskasse.',buffType:'mercy',buffLabel:'✧ Königs-Tribut (+60% Gold & Essenz · 5 Min.)',durMs:300000},
+   {label:'„Schmilz deine Krone ein und schmiede Klingen gegen den Himmel!“',reply:'Ein ganzes sterbliches Königreich marschiert im Schatten deines Gewitters.',buffType:'wrath',buffLabel:'⚡ Imperiale Sturmfront (+60% Schaden & +35% Entladung · 5 Min.)',durMs:300000}
+  ]
+ },
+ {
+  id:'fm_15m',
+  fearReq:15000000,
+  title:'15,00M Götterfurcht · Das Orakel der Sterblichen',
+  mortalPrompt:'Am Rand des Ewigen Zeitrisses blickt eine sterbliche Seherin mit violett leuchtenden Augen zu dir auf: „Fünfzehn Millionen Furcht … Selbst die Sterne der Menschenwelt beugen sich Eurem Druck, Ewige Göttertod-Bringerin!“',
+  choices:[
+   {label:'„Segne die Sterblichen mit dem Schutz des violetten Himmels.“',reply:'Ein unerschöpflicher Strom aus Gold und reiner Blitzessenz strömt durch die Schreine.',buffType:'mercy',buffLabel:'✧ Orakel-Segen (+75% Gold & Essenz · 5 Min.)',durMs:300000},
+   {label:'„Lass jede sterbliche Seele Aureons nahenden Untergang spüren!“',reply:'Die vereinigte Ehrfurcht einer ganzen Welt verdichtet dein Reiatsu ins Unermessliche.',buffType:'wrath',buffLabel:'⚡ Welten-Reiatsu (+75% Schaden & +40% Entladung · 5 Min.)',durMs:300000}
+  ]
+ }
+];
+
+const weeklyAnomaliesData=[
+ {id:'anom_storm',name:'⚡ Kosmischer Urblitz-Sturm',desc:'+30 % Gesamtschaden & +20 % schnellere Göttliche Entladung in dieser Woche.',dmgMult:1.3,goldMult:1,essMult:1,ocMult:1.2,echoMult:1},
+ {id:'anom_greed',name:'◈ Goldene Sternenfinsternis',desc:'+45 % Gold-Ertrag & +25 % Blitzessenz aus allen Kämpfen in dieser Woche.',dmgMult:1,goldMult:1.45,essMult:1.25,ocMult:1,echoMult:1},
+ {id:'anom_ether',name:'ϟ Äther-Flut des Zeitrisses',desc:'+50 % Blitzessenz & +15 % Angriffsschaden in dieser Woche.',dmgMult:1.15,goldMult:1,essMult:1.5,ocMult:1.1,echoMult:1},
+ {id:'anom_echo',name:'✧ Resonanz der Ewigkeit',desc:'+25 % mehr Ewigkeitsechos beim Prestige & +25 % Schaden gegen alle Gegner.',dmgMult:1.25,goldMult:1.15,essMult:1.15,ocMult:1,echoMult:1.25}
+];
+function getCurrentISOWeekNumber(){
+ const d=new Date();
+ const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+ const dayNum=date.getUTCDay()||7;
+ date.setUTCDate(date.getUTCDate()+4-dayNum);
+ const yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+ return Math.ceil((((date-yearStart)/86400000)+1)/7);
+}
+function getActiveWeeklyAnomaly(){
+ const wk=getCurrentISOWeekNumber();
+ const anom=weeklyAnomaliesData[wk%weeklyAnomaliesData.length]||weeklyAnomaliesData[0];
+ return {week:wk,anom};
+}
 function calcFearValue(){
  // Deutlich langsamerer, bedeutungsvollerer Aufstieg der Götterfurcht
  const upSum=Object.values(state.upgrades||{}).reduce((a,b)=>a+(b||0),0);
@@ -2656,18 +2808,19 @@ function isLoreBuffActive(type){
  return Boolean(state.loreBuff&&state.loreBuff.until>Date.now()&&(!type||state.loreBuff.type===type));
 }
 function damageMult(){
- let m=(1+state.talents.revenge*.12)*(state.relics.includes('spear')?1.25:1)*(state.relics.includes('mask')?1.5:1)*(state.relics.includes('throne')?2:1);
+ const {anom}=getActiveWeeklyAnomaly();
+ let m=(1+state.talents.revenge*.12)*(state.relics.includes('spear')?1.25:1)*(state.relics.includes('mask')?1.5:1)*(state.relics.includes('throne')?2:1)*(anom.dmgMult||1);
  if(state.kills>=50)m*=1.1;
  if(state.stage>=40)m*=1.25;
  if(state.echoes>=5)m*=1.3;
  if(state.activeCompanion==='lysera'&&state.rivalAwakened)m*=1.2;
- if(isLoreBuffActive('wrath'))m*=1.35;
+ if(isLoreBuffActive('wrath'))m*=(state.loreBuff&&state.loreBuff.mult?state.loreBuff.mult:1.35);
  if(isOvercharged())m*=getOverchargeStackMult(state.activeOverchargeStacks||1);
  else if((state.overchargeStacks||0)>=5)m*=2.5; // Passiver Macht-Schub solange 5 Max Stacks gehalten werden
  return m;
 }
 function critChance(){return Math.min(.75,.05+state.upgrades.crit*.03)}
-function enemyMax(){return Math.floor(35*Math.pow(1.19,state.stage-1)*(state.stage%10===0?7:1))}
+function enemyMax(){return Math.floor(35*Math.pow(1.19,state.stage-1)*(state.stage%10===0?7:(state.invasionActive?4.5:1)))}
 function resetEnemy(){state.enemyMax=enemyMax();state.enemyHp=state.enemyMax;render()}
 function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2100)}
 function say(msg){$('combatlog').textContent=msg}
@@ -2692,9 +2845,10 @@ function attackTick(allowAnim=true){
   if(curStacks<5){
    // Jede Stapelung (1x bis 5x) dauert spürbar länger aufzuladen
    const stackDiff=[1.0,1.45,2.05,2.8,3.75][curStacks]||3.75;
+   const {anom}=getActiveWeeklyAnomaly();
    const compOcMult=(state.activeCompanion==='lysera'&&state.rivalAwakened)?1.25:1;
-   const buffOcMult=isLoreBuffActive('wrath')?1.2:1;
-   const baseGain=(0.35+((state.skills.timefracture||0)*0.14)+(state.relics.includes('wings')?0.2:0))*compOcMult*buffOcMult;
+   const buffOcMult=isLoreBuffActive('wrath')?1.25:1;
+   const baseGain=(0.35+((state.skills.timefracture||0)*0.14)+(state.relics.includes('wings')?0.2:0))*compOcMult*buffOcMult*(anom.ocMult||1);
    const gain=baseGain/stackDiff;
    state.overcharge=(state.overcharge||0)+gain;
    if(state.overcharge>=100){
@@ -2721,7 +2875,8 @@ function attackTick(allowAnim=true){
  if(state.enemyHp<=0)killEnemy();
 }
 function killEnemy(){
- let boss=state.stage%10===0;
+ const wasInvasion=Boolean(state.invasionActive);
+ let boss=(state.stage%10===0)||wasInvasion;
  if(typeof triggerArenaKillAnim==='function')triggerArenaKillAnim(boss);
  playSound(boss?'boss':'kill');
  state.kills++;
@@ -2729,24 +2884,71 @@ function killEnemy(){
   state.enemyHp=state.enemyMax;
   return;
  }
+ const {anom}=getActiveWeeklyAnomaly();
  const compResMult=(state.activeCompanion==='seraphina'&&state.friend2Awakened)?1.25:1;
- const mercyMult=isLoreBuffActive('mercy')?1.35:1;
- let gold=(5+state.stage*2)*(1+(state.upgrades.greed||0)*.18)*(1+(state.talents.divinity||0)*.2)*(state.relics.includes('crown')?1.25:1)*(state.relics.includes('chalice')?1.4:1)*(state.stage>=15?1.15:1)*(state.echoes>=5?1.3:1)*compResMult*mercyMult;
- let ess=(1+Math.floor(state.stage/4))*(1+state.upgrades.essence*.2)*(1+(state.talents.divinity||0)*.2)*(state.relics.includes('heart')?1.35:1)*(state.bossKills>=5?1.2:1)*compResMult*mercyMult;
+ const mercyMult=isLoreBuffActive('mercy')?(state.loreBuff&&state.loreBuff.mult?state.loreBuff.mult:1.35):1;
+ let gold=(5+state.stage*2)*(1+(state.upgrades.greed||0)*.18)*(1+(state.talents.divinity||0)*.2)*(state.relics.includes('crown')?1.25:1)*(state.relics.includes('chalice')?1.4:1)*(state.stage>=15?1.15:1)*(state.echoes>=5?1.3:1)*compResMult*mercyMult*(anom.goldMult||1);
+ let ess=(1+Math.floor(state.stage/4))*(1+state.upgrades.essence*.2)*(1+(state.talents.divinity||0)*.2)*(state.relics.includes('heart')?1.35:1)*(state.bossKills>=5?1.2:1)*compResMult*mercyMult*(anom.essMult||1);
  state.gold+=gold;state.essence+=ess;
- if(boss){state.bossKills++;state.gold+=state.stage*15;state.essence+=state.stage;if(typeof triggerCyberExplosion==='function')triggerCyberExplosion();say('Boss besiegt! Ein Splitter der Vergangenheit gehört dir.');relicData.forEach(r=>{if(state.stage>=r.unlock&&!state.relics.includes(r.id))unlockRelic(r.id)});}
- else if(Math.random()<.18)say('Ein Schatten zerfällt zu Blitzessenz …');
+
+ if(wasInvasion){
+  state.invasionActive=false;
+  state.bossKills++;
+  const invGold=Math.floor(gold*12 + state.stage*25);
+  const invEss=Math.floor(ess*8 + state.stage*3);
+  state.gold+=invGold;
+  state.essence+=invEss;
+  state.echoes+=1;
+  document.body.classList.remove('aureon-invasion-active');
+  if($('invasionActiveBanner'))$('invasionActiveBanner').classList.remove('active');
+  if(typeof triggerCyberExplosion==='function')triggerCyberExplosion();
+  say(`🩸 AUREONS VORBOTE VERNICHTET! Du erhältst +${fmt(invGold)} Gold, +${fmt(invEss)} Essenz & +1 Ewigkeitsecho!`);
+  toast('🩸 Aureons Vorbote besiegt! (+1 Ewigkeitsecho)');
+ }else if(state.stage%10===0){
+  state.bossKills++;state.gold+=state.stage*15;state.essence+=state.stage;
+  if(typeof triggerCyberExplosion==='function')triggerCyberExplosion();
+  say('Boss besiegt! Ein Splitter der Vergangenheit gehört dir.');
+  relicData.forEach(r=>{if(state.stage>=r.unlock&&!state.relics.includes(r.id))unlockRelic(r.id)});
+ }else if(Math.random()<.18){
+  say('Ein Schatten zerfällt zu Blitzessenz …');
+ }
+
  if(!boss&&state.kills%5===0)say('Vaeliths Macht wächst. Die nächste Welle nähert sich.');
  if(!state.activeEncounter&&Math.random()<.16){
   state.activeEncounter=pickNextMortalEncounter();
  }
- state.stage++;state.enemyMax=enemyMax();state.enemyHp=state.enemyMax;checkMemories();render()
+ state.stage++;
+
+ // "Aureons Rache" Live-Invasion: 1% Chance beim Farmen im aktuellen Gebiet (wenn nächste Stufe kein regulärer 10er-Boss ist)
+ if(!wasInvasion && state.stage%10!==0 && Math.random()<0.01){
+  triggerAureonsVengeanceInvasion();
+ }else{
+  state.enemyMax=enemyMax();
+  state.enemyHp=state.enemyMax;
+ }
+ checkMemories();render()
+}
+function triggerAureonsVengeanceInvasion(){
+ state.invasionActive=true;
+ state.enemyMax=enemyMax();
+ state.enemyHp=state.enemyMax;
+ document.body.classList.add('aureon-invasion-active');
+ if($('invasionActiveBanner'))$('invasionActiveBanner').classList.add('active');
+ playSound('boss');
+ if(typeof triggerCyberExplosion==='function')triggerCyberExplosion();
+ say('🩸 AUREONS RACHE (1% LIVE-EVENT)! Der Himmel färbt sich blutrot – ein Vorbote von Aureon, dem Ewigen fällt als Zwischenboss in dein Gebiet ein!');
+ toast('🩸 LIVE-INVASION: Ein Vorbote von Aureon erscheint!');
 }
 function unlockRelic(id){if(state.relics.includes(id))return;state.relics.push(id);let r=relicData.find(x=>x.id===id);toast('Relikt gefunden: '+r.name);say('Ein vergessenes Relikt antwortet auf ihre Berührung.')}
 function checkMemories(){checkTitleUnlocks();memoriesData.forEach(m=>{if(state.stage>=m.stage&&!state.memories.includes(m.title)){state.memories.push(m.title);if(m.stage===3||m.stage===10||m.stage===15)toast('Erinnerung entdeckt: '+m.title)}})}
-function prestigeGain(){if(state.stage<10)return 0;return Math.floor(Math.sqrt(state.stage-8)*(1+state.talents.truth*.1))}
+function prestigeGain(){
+ if(state.stage<10)return 0;
+ const {anom}=getActiveWeeklyAnomaly();
+ const mirrorMult=state.relics.includes('mirror')?1.5:1;
+ return Math.max(1,Math.floor(Math.sqrt(state.stage-8)*(1+state.talents.truth*.1)*mirrorMult*(anom.echoMult||1)));
+}
 function doPrestige(){let gain=prestigeGain();if(gain<1)return; if(!confirm('Ein neues Zeitalter beginnen? Du erhältst '+gain+' Echos. Gold, Essenz, Stufen und die Offline-Ertragshistorie werden zurückgesetzt.'))return;
- state.echoes+=gain;state.lastPrestige=Date.now();state.gold=0;state.essence=0;state.stage=1;state.kills=0;state.bossKills=0;state.upgrades={power:0,speed:0,crit:0,essence:0,greed:0,penetration:0};state.skills={chain:0,storm:0,wrath:0,nova:0,timefracture:0};state.overcharge=0;state.overchargeStacks=0;state.activeOverchargeStacks=0;state.overchargeActiveUntil=0;state.offlineHistory=[];state.attack=8;state.attackSpeed=.8;renderOfflineHistory();resetEnemy();if(typeof triggerCyberExplosion==='function')triggerCyberExplosion();say('Die Zeit bricht. Doch diesmal erinnert sich Vaelith.');toast('Zeitalter erneuert: +'+gain+' Echos');save()}
+ state.echoes+=gain;state.reincarnations=(state.reincarnations||0)+1;state.invasionActive=false;document.body.classList.remove('aureon-invasion-active');if($('invasionActiveBanner'))$('invasionActiveBanner').classList.remove('active');state.lastPrestige=Date.now();state.gold=0;state.essence=0;state.stage=1;state.kills=0;state.bossKills=0;state.upgrades={power:0,speed:0,crit:0,essence:0,greed:0,penetration:0};state.skills={chain:0,storm:0,wrath:0,nova:0,timefracture:0};state.overcharge=0;state.overchargeStacks=0;state.activeOverchargeStacks=0;state.overchargeActiveUntil=0;state.offlineHistory=[];state.attack=8;state.attackSpeed=.8;renderOfflineHistory();resetEnemy();if(typeof triggerCyberExplosion==='function')triggerCyberExplosion();say('Die Zeit bricht zum '+state.reincarnations+'. Mal. Doch diesmal erinnert sich Vaelith.');toast('Reinkarnation #'+state.reincarnations+': +'+gain+' Echos');save()}
 let domBuilt=false;
 function buildInteractiveLists(){
  $('upgradeGrid').innerHTML=upgradeData.map(u=>`<div class="card"><div class="cardhead"><div class="cardicon">${u.icon}</div><div><div class="cardtitle">${u.name}</div><div class="level" id="up-lvl-${u.id}">Rang 0</div></div></div><div class="carddesc">${u.desc}<span class="stat-val-line"><br>${u.stat}</span></div><button class="buy" type="button" id="up-btn-${u.id}" data-up="${u.id}">⬡ 0 Gold</button></div>`).join('');
@@ -2823,6 +3025,25 @@ function resolveMortalEncounter(encId,choiceIdx){
  }
  state.lastEncounterOutcome={id:enc.id,title:enc.title,choiceLabel:ch.label,outcome:ch.outcome+buffTag};
  checkTitleUnlocks();
+ lastLoreSig='';
+ render();
+ save();
+}
+function chooseFearMilestoneDialogue(fmId,choiceIdx){
+ const fm=fearMilestonesData.find(x=>x.id===fmId);
+ if(!fm)return;
+ if(!state.fearMilestoneChoices||typeof state.fearMilestoneChoices!=='object')state.fearMilestoneChoices={};
+ if(choiceIdx===null){
+  delete state.fearMilestoneChoices[fmId];
+ }else{
+  const ch=fm.choices[choiceIdx]||fm.choices[0];
+  state.fearMilestoneChoices[fmId]=choiceIdx;
+  const mult=fm.fearReq>=15000000?1.75:fm.fearReq>=1000000?1.6:fm.fearReq>=250000?1.5:fm.fearReq>=50000?1.45:1.4;
+  state.loreBuff={type:ch.buffType,label:ch.buffLabel,mult,until:Date.now()+(ch.durMs||240000)};
+  playSound('upgrade');
+  toast(`⚡ Götterfurcht-Buff aktiv: ${ch.buffLabel}`);
+  say(`👁 ${fm.title}: ${ch.reply}`);
+ }
  lastLoreSig='';
  render();
  save();
@@ -3080,7 +3301,12 @@ function render(){
 
  const hpPct=state.enemyMax>0?Math.max(0,state.enemyHp/state.enemyMax*100):0;
  $('enemyHpText').textContent=fmt(Math.max(0,state.enemyHp))+' / '+fmt(state.enemyMax);$('enemyHpBar').style.width=hpPct+'%';
- $('bossBarWrap').style.display=state.stage%10===0?'block':'none';$('bossLabel').textContent='BOSS · STUFE '+state.stage;$('bossHpText').textContent=fmt(Math.max(0,state.enemyHp))+' / '+fmt(state.enemyMax);$('bossHpBar').style.width=hpPct+'%';
+ const showBossBar=(state.stage%10===0)||Boolean(state.invasionActive);
+ $('bossBarWrap').style.display=showBossBar?'block':'none';
+ $('bossLabel').textContent=state.invasionActive?('🩸 VORBOTE VON AUREON · STUFE '+state.stage):('BOSS · STUFE '+state.stage);
+ $('bossHpText').textContent=fmt(Math.max(0,state.enemyHp))+' / '+fmt(state.enemyMax);$('bossHpBar').style.width=hpPct+'%';
+ document.body.classList.toggle('aureon-invasion-active',Boolean(state.invasionActive));
+ if($('invasionActiveBanner'))$('invasionActiveBanner').classList.toggle('active',Boolean(state.invasionActive));
  upgradeData.forEach(u=>{
   let c=costUpgrade(u),l=state.upgrades[u.id],can=state.gold>=c;
   const lvlEl=$('up-lvl-'+u.id),btnEl=$('up-btn-'+u.id);
@@ -3094,7 +3320,19 @@ function render(){
   if(btnEl){btnEl.textContent=fmt(c)+' Essenz';btnEl.classList.toggle('locked',!can);btnEl.setAttribute('aria-disabled',String(!can));}
  });
  const pGain=prestigeGain();
- $('prestigeGain').textContent=pGain+' Echos';$('prestigeBtn').disabled=pGain<1;$('prestigeBtn').style.opacity=pGain<1?'.4':'1';
+ setText('prestigeGain',pGain+' Echos');
+ setText('reincarnationCountDisplay',String(state.reincarnations||0));
+ $('prestigeBtn').disabled=pGain<1;$('prestigeBtn').style.opacity=pGain<1?'.4':'1';
+ const {week:curWk,anom:curAnom}=getActiveWeeklyAnomaly();
+ setText('weeklyAnomalyPill',`${curAnom.name} (KW ${curWk})`);
+ setText('weeklyAnomalyWeekTag',`Kalenderwoche ${curWk}`);
+ if($('weeklyAnomalyCard')){
+  const anomHtml=`<div class="listitem" style="padding:4px 0"><div><strong style="color:var(--gold)">${curAnom.name} (Aktiv in KW ${curWk})</strong><p style="color:var(--text);margin-top:4px">${curAnom.desc}</p></div><span style="color:#9ff0c2;font-size:11px;font-weight:800">AKTIV</span></div>`;
+  if($('weeklyAnomalyCard').dataset.wk!==String(curWk)){
+   $('weeklyAnomalyCard').dataset.wk=String(curWk);
+   $('weeklyAnomalyCard').innerHTML=anomHtml;
+  }
+ }
 
  // Aufleuchten von Relikte-Icon (wenn alle 8 Relikte freigeschaltet) & Prestige (wenn alle Gebiete & Bosse besiegt: ab Gebiet 8 / Stufe > 75 & Bosse besiegt)
  const allRelicsOwned=state.relics.length>=relicData.length;
@@ -3121,7 +3359,8 @@ function render(){
  const reactSig=JSON.stringify(state.memoryReactions||{});
  const rivalSig=(state.rivalAwakened?'1':'0')+'|'+(rivalExpanded?'1':'0')+'|'+(state.activeRivalChapter||0)+'|'+JSON.stringify(state.rivalDialogues||{})+'|'+(state.friend2Awakened?'1':'0')+'|'+(friend2Expanded?'1':'0')+'|'+(state.activeFriend2Chapter||0)+'|'+JSON.stringify(state.friend2Dialogues||{})+'|'+(state.aureonAwakened?'1':'0')+'|'+(aureonExpanded?'1':'0')+'|'+(state.activeAureonChapter||0)+'|'+JSON.stringify(state.aureonDialogues||{})+'|'+JSON.stringify(expandedRelics)+'|'+((state.rivalAwakened&&state.friend2Awakened&&state.aureonAwakened)?0:Math.floor(fearVal/50000));
  const encSig=(state.activeEncounter||'')+'|'+JSON.stringify(state.lastEncounterOutcome||null)+'|'+(state.seenEncounterIds||[]).length;
- const loreSig=state.relics.join(',')+'|'+state.memories.join(',')+'|'+msUnlocked+'|'+reactSig+'|'+rivalSig+'|'+encSig+'|'+allRelicsOwned+'|'+(state.activeCompanion||'')+'|'+(state.mercyCount||0)+'|'+(state.wrathCount||0);
+ const fmSig=fearMilestonesData.filter(f=>fearVal>=f.fearReq).map(f=>f.id).join(',')+'|'+JSON.stringify(state.fearMilestoneChoices||{});
+ const loreSig=state.relics.join(',')+'|'+state.memories.join(',')+'|'+msUnlocked+'|'+reactSig+'|'+rivalSig+'|'+encSig+'|'+allRelicsOwned+'|'+(state.activeCompanion||'')+'|'+(state.mercyCount||0)+'|'+(state.wrathCount||0)+'|'+fmSig;
  if(loreSig!==lastLoreSig){
   lastLoreSig=loreSig;
   $('relicCount').textContent=state.relics.length+' / '+relicData.length;
@@ -3551,6 +3790,31 @@ function render(){
    if($('seekEncounterBtn'))$('seekEncounterBtn').onclick=triggerManualEncounterSearch;
   }
 
+  const fmCard=$('fearMilestoneDialoguesCard');
+  if(fmCard){
+   const fmChoices=state.fearMilestoneChoices||{};
+   fmCard.innerHTML=fearMilestonesData.map(fm=>{
+    const unlocked=fearVal>=fm.fearReq;
+    if(!unlocked){
+     return `<div class="listitem"><div><strong>🔒 ${fm.title}</strong><p>Erfordert ${fmt(fm.fearReq)} Götterfurcht (Aktuell: ${fmt(fearVal)})</p></div><span style="color:#66677e;font-size:11px;font-weight:700">GESPERRT</span></div>`;
+    }
+    const cIdx=(fmChoices[fm.id]!==undefined)?fmChoices[fm.id]:null;
+    const cObj=(cIdx!==null&&fm.choices[cIdx])?fm.choices[cIdx]:null;
+    const bodyHtml=cObj
+     ? `<div class="reaction-chosen" style="margin-top:8px"><div><strong>${cObj.reply}</strong><br><span style="color:#ffd166;font-style:normal;font-weight:700">${cObj.buffLabel}</span></div><div style="display:flex;gap:6px;flex-shrink:0"><button type="button" class="reaction-btn" data-fm-rebuff="${fm.id}" data-fm-idx="${cIdx}" style="padding:4px 7px;font-size:9.5px">⚡ Buff erneuern</button><button type="button" class="reaction-reset" data-fm-reset="${fm.id}">Ändern</button></div></div>`
+     : `<div class="reaction-choices" style="flex-direction:column;margin-top:8px">${fm.choices.map((ch,idx)=>`<button type="button" class="reaction-btn" data-fm-id="${fm.id}" data-fm-idx="${idx}">💬 ${ch.label} <span style="color:#ffd166;font-weight:700">(${ch.buffLabel})</span></button>`).join('')}</div>`;
+    return `<div class="listitem" style="display:block"><div><strong style="color:var(--cyan)">👁 ${fm.title}</strong><p style="color:var(--text);margin-top:4px">${fm.mortalPrompt}</p></div>${bodyHtml}</div>`;
+   }).join('');
+   fmCard.querySelectorAll('[data-fm-id]').forEach(btn=>{
+    btn.onclick=()=>chooseFearMilestoneDialogue(btn.dataset.fmId,Number(btn.dataset.fmIdx));
+   });
+   fmCard.querySelectorAll('[data-fm-rebuff]').forEach(btn=>{
+    btn.onclick=()=>chooseFearMilestoneDialogue(btn.dataset.fmRebuff,Number(btn.dataset.fmIdx));
+   });
+   fmCard.querySelectorAll('[data-fm-reset]').forEach(btn=>{
+    btn.onclick=()=>chooseFearMilestoneDialogue(btn.dataset.fmReset,null);
+   });
+  }
   if($('milestoneList'))$('milestoneList').innerHTML=milestonesData.map(m=>{let ok=m.check();return `<div class="listitem"><div><strong>${ok?'⚡':'◇'} ${m.name}</strong><p>${m.desc}</p></div><span style="color:${ok?'#9ff0c2':'#66677e'};font-size:12px;font-weight:700">${ok?'AKTIV':'OFFEN'}</span></div>`}).join('');
  }
 }
@@ -3718,7 +3982,7 @@ function refreshCachedThemeColors(){
 }
 function applyPalette(){document.body.dataset.palette=state.palette||'raiden';document.body.dataset.titleFx=state.selectedTitleEffect||'stormborn';if($('paletteSelect'))$('paletteSelect').value=state.palette||'raiden';if($('titleEffectSelect'))$('titleEffectSelect').value=state.selectedTitleEffect||'stormborn';refreshCachedThemeColors();}
 function save(){try{state.lastTime=Date.now();localStorage.setItem('thunderborn-save-v1',JSON.stringify(state))}catch(e){toast('Speichern fehlgeschlagen: eventuell ist der Speicher voll.')}}
-function load(){try{let raw=localStorage.getItem('thunderborn-save-v1');if(!raw){renderOfflineHistory();return;}let s=JSON.parse(raw);Object.assign(state,s);state.characterTitle=typeof s.characterTitle==='string'?s.characterTitle:'Die Sturmgeborene';state.selectedTitle=typeof s.selectedTitle==='string'?s.selectedTitle:'stormborn';state.customTitle=sanitizePlainTextTitle(s.customTitle||'');state.selectedTitleEffect=typeof s.selectedTitleEffect==='string'?s.selectedTitleEffect:state.selectedTitle;state.unlockedTitles=Array.isArray(s.unlockedTitles)?s.unlockedTitles:['stormborn'];state.offlineHistory=Array.isArray(s.offlineHistory)?s.offlineHistory.slice(0,3):[];state.memoryReactions=(s.memoryReactions&&typeof s.memoryReactions==='object')?s.memoryReactions:{};state.seenEncounterIds=Array.isArray(s.seenEncounterIds)?s.seenEncounterIds:[];state.rivalAwakened=Boolean(s.rivalAwakened);state.rivalDialogues=(s.rivalDialogues&&typeof s.rivalDialogues==='object')?s.rivalDialogues:{};state.activeRivalChapter=Number(s.activeRivalChapter)||0;state.friend2Awakened=Boolean(s.friend2Awakened);state.friend2Dialogues=(s.friend2Dialogues&&typeof s.friend2Dialogues==='object')?s.friend2Dialogues:{};state.activeFriend2Chapter=Number(s.activeFriend2Chapter)||0;state.aureonAwakened=Boolean(s.aureonAwakened);state.aureonDialogues=(s.aureonDialogues&&typeof s.aureonDialogues==='object')?s.aureonDialogues:{};state.activeAureonChapter=Number(s.activeAureonChapter)||0;state.showUpgradeValues=(s.showUpgradeValues!==undefined)?Boolean(s.showUpgradeValues):true;state.dailyLogin=(s.dailyLogin&&typeof s.dailyLogin==='object')?{lastClaimDate:String(s.dailyLogin.lastClaimDate||''),streak:Number(s.dailyLogin.streak)||0,totalDays:Number(s.dailyLogin.totalDays)||0,maxStreak:Number(s.dailyLogin.maxStreak)||Number(s.dailyLogin.streak)||0,lastTrialDate:String(s.dailyLogin.lastTrialDate||''),bestTrialDmg:Number(s.dailyLogin.bestTrialDmg)||0}:{lastClaimDate:'',streak:0,totalDays:0,maxStreak:0,lastTrialDate:'',bestTrialDmg:0};state.activeCompanion=typeof s.activeCompanion==='string'?s.activeCompanion:'';state.loreBuff=(s.loreBuff&&typeof s.loreBuff==='object')?s.loreBuff:{type:'',label:'',until:0};state.mercyCount=Number(s.mercyCount)||0;state.wrathCount=Number(s.wrathCount)||0;syncUpgradeValuesUI();state.palette=['raiden','honkai','storm','crimson','midnight','sovereign'].includes(s.palette)?s.palette:'raiden';applyPalette();if(state.characterImage){$('characterImage').src=state.characterImage;$('characterStage').classList.add('uploaded');}state.upgrades=Object.assign({power:0,speed:0,crit:0,essence:0,greed:0,penetration:0},s.upgrades||{});state.skills=Object.assign({chain:0,storm:0,wrath:0,nova:0,timefracture:0},s.skills||{});state.talents=Object.assign({memory:0,revenge:0,truth:0,divinity:0,cataclysm:0},s.talents||{});state.overchargeStacks=Math.min(5,Math.max(0,Number(s.overchargeStacks)||0));if(state.overcharge>=100&&state.overchargeStacks===0){state.overchargeStacks=1;state.overcharge=0;}let elapsed=Math.min(8*3600,Math.max(0,(Date.now()-(s.lastTime||Date.now()))/1000));let offline=elapsed*(state.attack*state.attackSpeed*.35)*(state.relics.includes('crown')?1.25:1);let offGold=Math.floor(offline*.08);let offEss=Math.floor(offline*.01*(1+state.talents.memory*.15));if(elapsed>=10&&offGold>0){state.gold+=offGold;state.essence+=offEss;const nowStr=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';state.offlineHistory.unshift({dateStr:nowStr,durationSec:Math.floor(elapsed),gold:offGold,essence:offEss});state.offlineHistory=state.offlineHistory.slice(0,3);setTimeout(()=>toast('Offline-Fortschritt: +'+fmt(offGold)+' Gold'),500)}renderOfflineHistory();resetEnemy()}catch(e){}}
+function load(){try{let raw=localStorage.getItem('thunderborn-save-v1');if(!raw){renderOfflineHistory();return;}let s=JSON.parse(raw);Object.assign(state,s);state.characterTitle=typeof s.characterTitle==='string'?s.characterTitle:'Die Sturmgeborene';state.selectedTitle=typeof s.selectedTitle==='string'?s.selectedTitle:'stormborn';state.customTitle=sanitizePlainTextTitle(s.customTitle||'');state.selectedTitleEffect=typeof s.selectedTitleEffect==='string'?s.selectedTitleEffect:state.selectedTitle;state.unlockedTitles=Array.isArray(s.unlockedTitles)?s.unlockedTitles:['stormborn'];state.offlineHistory=Array.isArray(s.offlineHistory)?s.offlineHistory.slice(0,3):[];state.memoryReactions=(s.memoryReactions&&typeof s.memoryReactions==='object')?s.memoryReactions:{};state.seenEncounterIds=Array.isArray(s.seenEncounterIds)?s.seenEncounterIds:[];state.rivalAwakened=Boolean(s.rivalAwakened);state.rivalDialogues=(s.rivalDialogues&&typeof s.rivalDialogues==='object')?s.rivalDialogues:{};state.activeRivalChapter=Number(s.activeRivalChapter)||0;state.friend2Awakened=Boolean(s.friend2Awakened);state.friend2Dialogues=(s.friend2Dialogues&&typeof s.friend2Dialogues==='object')?s.friend2Dialogues:{};state.activeFriend2Chapter=Number(s.activeFriend2Chapter)||0;state.aureonAwakened=Boolean(s.aureonAwakened);state.aureonDialogues=(s.aureonDialogues&&typeof s.aureonDialogues==='object')?s.aureonDialogues:{};state.activeAureonChapter=Number(s.activeAureonChapter)||0;state.showUpgradeValues=(s.showUpgradeValues!==undefined)?Boolean(s.showUpgradeValues):true;state.dailyLogin=(s.dailyLogin&&typeof s.dailyLogin==='object')?{lastClaimDate:String(s.dailyLogin.lastClaimDate||''),streak:Number(s.dailyLogin.streak)||0,totalDays:Number(s.dailyLogin.totalDays)||0,maxStreak:Number(s.dailyLogin.maxStreak)||Number(s.dailyLogin.streak)||0,lastTrialDate:String(s.dailyLogin.lastTrialDate||''),bestTrialDmg:Number(s.dailyLogin.bestTrialDmg)||0}:{lastClaimDate:'',streak:0,totalDays:0,maxStreak:0,lastTrialDate:'',bestTrialDmg:0};state.activeCompanion=typeof s.activeCompanion==='string'?s.activeCompanion:'';state.loreBuff=(s.loreBuff&&typeof s.loreBuff==='object')?s.loreBuff:{type:'',label:'',until:0};state.mercyCount=Number(s.mercyCount)||0;state.wrathCount=Number(s.wrathCount)||0;state.reincarnations=Number(s.reincarnations)||0;state.musicEnabled=(s.musicEnabled!==undefined)?Boolean(s.musicEnabled):true;state.customOstName=typeof s.customOstName==='string'?s.customOstName:'';state.samsungDarkMode=['auto','on','off'].includes(s.samsungDarkMode)?s.samsungDarkMode:'auto';state.fearMilestoneChoices=(s.fearMilestoneChoices&&typeof s.fearMilestoneChoices==='object')?s.fearMilestoneChoices:{};state.invasionActive=Boolean(s.invasionActive);syncUpgradeValuesUI();state.palette=['raiden','honkai','storm','crimson','midnight','sovereign'].includes(s.palette)?s.palette:'raiden';applyPalette();if(state.characterImage){$('characterImage').src=state.characterImage;$('characterStage').classList.add('uploaded');}state.upgrades=Object.assign({power:0,speed:0,crit:0,essence:0,greed:0,penetration:0},s.upgrades||{});state.skills=Object.assign({chain:0,storm:0,wrath:0,nova:0,timefracture:0},s.skills||{});state.talents=Object.assign({memory:0,revenge:0,truth:0,divinity:0,cataclysm:0},s.talents||{});state.overchargeStacks=Math.min(5,Math.max(0,Number(s.overchargeStacks)||0));if(state.overcharge>=100&&state.overchargeStacks===0){state.overchargeStacks=1;state.overcharge=0;}let elapsed=Math.min(8*3600,Math.max(0,(Date.now()-(s.lastTime||Date.now()))/1000));let offline=elapsed*(state.attack*state.attackSpeed*.35)*(state.relics.includes('crown')?1.25:1);let offGold=Math.floor(offline*.08);let offEss=Math.floor(offline*.01*(1+state.talents.memory*.15));if(elapsed>=10&&offGold>0){state.gold+=offGold;state.essence+=offEss;const nowStr=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';state.offlineHistory.unshift({dateStr:nowStr,durationSec:Math.floor(elapsed),gold:offGold,essence:offEss});state.offlineHistory=state.offlineHistory.slice(0,3);setTimeout(()=>toast('Offline-Fortschritt: +'+fmt(offGold)+' Gold'),500)}renderOfflineHistory();resetEnemy()}catch(e){}}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+b.dataset.page));if(typeof clearArenaAnimations==='function')clearArenaAnimations();}));
 // Direct onclick handlers bound on persistent DOM buttons in buildInteractiveLists()
 $('prestigeBtn').onclick=doPrestige;
@@ -3876,6 +4140,7 @@ if($('cropApplyBtn'))$('cropApplyBtn').onclick=()=>{
 function toggleSound(){
  state.muted=!state.muted;
  syncSoundUI();
+ syncOstUI();
  if(!state.muted){ensureAudio();playSound('tap');}
  save();
  toast(state.muted?'Soundeffekte aus':'Soundeffekte an');
@@ -3924,7 +4189,7 @@ $('removeImageBtn').onclick=()=>{if(!state.characterImage){toast('Kein eigenes B
 $('showResetBtn').onclick=()=>{$('resetPanel').classList.add('open');$('resetConfirmInput').value='';$('confirmResetBtn').disabled=true;$('resetConfirmInput').focus()};
 $('resetConfirmInput').addEventListener('input',()=>{$('confirmResetBtn').disabled=$('resetConfirmInput').value.trim()!=='ALLES LÖSCHEN'});
 $('cancelResetBtn').onclick=()=>{$('resetPanel').classList.remove('open');$('resetConfirmInput').value=''};
-$('confirmResetBtn').onclick=()=>{if($('resetConfirmInput').value.trim()!=='ALLES LÖSCHEN')return;localStorage.removeItem('thunderborn-save-v1');for(const k of Object.keys(state))delete state[k];Object.assign(state,{gold:0,essence:0,echoes:0,stage:1,enemyHp:0,enemyMax:0,attack:8,attackSpeed:.8,upgrades:{power:0,speed:0,crit:0,essence:0,greed:0,penetration:0},skills:{chain:0,storm:0,wrath:0,nova:0,timefracture:0},talents:{memory:0,revenge:0,truth:0,divinity:0,cataclysm:0},relics:[],memories:[],kills:0,bossKills:0,overcharge:0,overchargeStacks:0,activeOverchargeStacks:0,overchargeActiveUntil:0,lastTime:Date.now(),lastPrestige:0,muted:true,characterTitle:'Die Sturmgeborene',selectedTitle:'stormborn',customTitle:'',selectedTitleEffect:'stormborn',unlockedTitles:['stormborn'],palette:'raiden',characterImage:'',offlineHistory:[],memoryReactions:{},activeEncounter:null,lastEncounterOutcome:null,seenEncounterIds:[],rivalAwakened:false,rivalDialogues:{},activeRivalChapter:0,friend2Awakened:false,friend2Dialogues:{},activeFriend2Chapter:0,aureonAwakened:false,aureonDialogues:{},activeAureonChapter:0,showUpgradeValues:true,dailyLogin:{lastClaimDate:'',streak:0,totalDays:0,maxStreak:0,lastTrialDate:'',bestTrialDmg:0},activeCompanion:'',loreBuff:{type:'',label:'',until:0},mercyCount:0,wrathCount:0});syncDailyLoginUI();renderOfflineHistory();syncSoundUI();applyPalette();refreshCharacterImage();renderTitleOptions();$('resetPanel').classList.remove('open');resetEnemy();render();save();toast('Spielstand vollständig zurückgesetzt')};
+$('confirmResetBtn').onclick=()=>{if($('resetConfirmInput').value.trim()!=='ALLES LÖSCHEN')return;localStorage.removeItem('thunderborn-save-v1');for(const k of Object.keys(state))delete state[k];Object.assign(state,{gold:0,essence:0,echoes:0,stage:1,enemyHp:0,enemyMax:0,attack:8,attackSpeed:.8,upgrades:{power:0,speed:0,crit:0,essence:0,greed:0,penetration:0},skills:{chain:0,storm:0,wrath:0,nova:0,timefracture:0},talents:{memory:0,revenge:0,truth:0,divinity:0,cataclysm:0},relics:[],memories:[],kills:0,bossKills:0,overcharge:0,overchargeStacks:0,activeOverchargeStacks:0,overchargeActiveUntil:0,lastTime:Date.now(),lastPrestige:0,muted:true,characterTitle:'Die Sturmgeborene',selectedTitle:'stormborn',customTitle:'',selectedTitleEffect:'stormborn',unlockedTitles:['stormborn'],palette:'raiden',characterImage:'',offlineHistory:[],memoryReactions:{},activeEncounter:null,lastEncounterOutcome:null,seenEncounterIds:[],rivalAwakened:false,rivalDialogues:{},activeRivalChapter:0,friend2Awakened:false,friend2Dialogues:{},activeFriend2Chapter:0,aureonAwakened:false,aureonDialogues:{},activeAureonChapter:0,showUpgradeValues:true,dailyLogin:{lastClaimDate:'',streak:0,totalDays:0,maxStreak:0,lastTrialDate:'',bestTrialDmg:0},activeCompanion:'',loreBuff:{type:'',label:'',until:0},mercyCount:0,wrathCount:0,reincarnations:0,musicEnabled:true,customOstName:'',samsungDarkMode:'auto',fearMilestoneChoices:{},invasionActive:false});deleteCustomOstFromDb();initOstPlayer();applySamsungDarkFix();syncDailyLoginUI();renderOfflineHistory();syncSoundUI();applyPalette();refreshCharacterImage();renderTitleOptions();$('resetPanel').classList.remove('open');resetEnemy();render();save();toast('Spielstand vollständig zurückgesetzt')};
 // Procedural Anime-Style Lightning Generator: builds thin, jagged, asymmetric main arcs, forks, and micro-tendrils on every discharge
 function buildBoltGeometry(svg){
  const segs=7+Math.floor(Math.random()*5);
@@ -4338,6 +4603,15 @@ function getActiveRegionIndex(){
 function getActiveArenaEnemyInfo(){
  const isRealBoss=(state.stage%10===0);
  const curRegIdx=getActiveRegionIndex();
+ if(state.invasionActive){
+  return {
+   isBoss:true,
+   bossSkin:{id:7,name:'🩸 VORBOTE VON AUREON, DEM EWIGEN',sub:'Aureons Rache · Live-Invasions-Zwischenboss',sigilColor:'#ff2a55'},
+   regIdx:curRegIdx,
+   name:'🩸 VORBOTE VON AUREON · ST. '+state.stage,
+   sub:'Aureons Rache · Live-Invasion (1% Event)'
+  };
+ }
  if(previewColossusIdx>0){
   const b=colossusBossSkins[previewColossusIdx-1]||colossusBossSkins[0];
   return {isBoss:true,bossSkin:b,regIdx:previewColossusIdx-1,name:b.name,sub:b.sub+' [Vorschau]'};
@@ -5986,11 +6260,15 @@ function startOrganicLightning(){
 const changelogHistoryData=[
  {
   version:'0.5.1',
-  tag:'Aktueller Patch · Performance-Boost & Samsung Dark-Mode Fix',
+  tag:'Aktueller Patch · OST-Player, Aureons Rache, Anomalien & Performance',
   changes:[
-   'Samsung Internet Dark-Mode Fix: Korrekte CSS-Syntax (color-scheme: dark only / dark) ohne vorangestelltes Leerzeichen und universeller Force-Dark-Schutz auf allen Elementen.',
-   'Dynamische Hintergrundmusik entfernt (Soundeffekte bleiben voll erhalten).',
-   'Massiver Performance-Boost für schwächere Geräte (ohne Einschränkung von Animationen): Echtes Farb-Caching statt 120x pro Sekunde getComputedStyle(), Wegfall des CPU-lastigen SVG feTurbulence-Filters, optimierte Reiatsu-Canvas-Auflösung und Smart-DOM-Text-Caching.'
+   'Hintergrundmusik (ost.mp3 & eigener MP3-Upload): Lädt standardmäßig die Datei „ost.mp3“ im Loop. In den Einstellungen kann alternativ eine eigene MP3 hochgeladen (wird lokal in IndexedDB gespeichert) und jederzeit wieder entfernt werden, um zur Standard-ost.mp3 zurückzukehren.',
+   'Samsung Internet Farb-Umkehr-Schutz: Automatische Erkennung plus umschaltbarer Gegen-Filter in den Einstellungen (Auto / An / Aus), falls Samsung Internet die Farben im erzwungenen Dark-Mode invertiert.',
+   'Götterfurcht-Meilensteine mit interaktiven Sterblichen-Dialogen: Ab 5K, 50K, 250K, 1M und 15M Götterfurcht schalten sich unter Chroniken neue Dialoge mit Sterblichen frei, die starke temporäre Buffs (bis +75 % Schaden oder Gold/Essenz) gewähren und jederzeit erneuert werden können.',
+   'Anzahl Reinkarnationen im Prestige-Menü ergänzt.',
+   'Wöchentliche Anomalien: Jede Kalenderwoche rotiert automatisch ein globaler Welten-Modifikator (z. B. Kosmischer Urblitz-Sturm, Goldene Sternenfinsternis, Äther-Flut, Resonanz der Ewigkeit).',
+   '„Aureons Rache“ Live-Invasion (1 % Event): Beim Farmen im aktuellen Gebiet besteht eine 1 % Chance, dass sich der Bildschirm blutrot verdunkelt und ein Vorbote von Aureon, dem Ewigen als Zwischenboss erscheint (belohnt mit massivem Gold, Essenz & +1 Ewigkeitsecho).',
+   'Massiver Performance-Boost für schwächere Geräte (ohne Einschränkung von Animationen): Echtes Farb-Caching statt 120x/Sek. getComputedStyle(), Wegfall des CPU-lastigen SVG feTurbulence-Filters und Smart-DOM-Caching.'
   ]
  },
  {
@@ -6432,7 +6710,185 @@ setInterval(()=>{
  }
 },1000);
 
-load();checkAutoDailyLogin();renderOfflineHistory();if(!state.enemyMax)resetEnemy();applyPalette();syncUpgradeValuesUI();syncSoundUI();checkTitleUnlocks();renderTitleOptions();$('paletteSelect').value=state.palette||'raiden';refreshCharacterImage();startOrganicLightning();render();
+
+// === V0.5.1: HINTERGRUNDMUSIK (ost.mp3 + EIGENE MP3 VIA INDEXEDDB) & SAMSUNG INTERNET DARK-MODE GEGENFILTER ===
+let customOstBlobUrl=null;
+function openOstDb(){
+ return new Promise((resolve,reject)=>{
+  if(!window.indexedDB){reject(new Error('No IndexedDB'));return;}
+  const req=indexedDB.open('thunderborn-audio-db',1);
+  req.onupgradeneeded=e=>{
+   const db=e.target.result;
+   if(!db.objectStoreNames.contains('ost'))db.createObjectStore('ost');
+  };
+  req.onsuccess=e=>resolve(e.target.result);
+  req.onerror=e=>reject(e);
+ });
+}
+async function saveCustomOstToDb(file){
+ const db=await openOstDb();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction('ost','readwrite');
+  tx.objectStore('ost').put(file,'customMp3');
+  tx.oncomplete=()=>resolve();
+  tx.onerror=e=>reject(e);
+ });
+}
+async function loadCustomOstFromDb(){
+ try{
+  const db=await openOstDb();
+  return await new Promise((resolve,reject)=>{
+   const tx=db.transaction('ost','readonly');
+   const req=tx.objectStore('ost').get('customMp3');
+   req.onsuccess=()=>resolve(req.result||null);
+   req.onerror=()=>resolve(null);
+  });
+ }catch(e){return null;}
+}
+async function deleteCustomOstFromDb(){
+ try{
+  const db=await openOstDb();
+  return await new Promise(resolve=>{
+   const tx=db.transaction('ost','readwrite');
+   tx.objectStore('ost').delete('customMp3');
+   tx.oncomplete=()=>resolve();
+   tx.onerror=()=>resolve();
+  });
+ }catch(e){}
+}
+async function initOstPlayer(){
+ const audio=$('ostAudio');
+ if(!audio)return;
+ audio.volume=0.42;
+ const savedBlob=await loadCustomOstFromDb();
+ if(savedBlob&&(savedBlob instanceof Blob)){
+  if(customOstBlobUrl)URL.revokeObjectURL(customOstBlobUrl);
+  customOstBlobUrl=URL.createObjectURL(savedBlob);
+  audio.src=customOstBlobUrl;
+  if(!state.customOstName)state.customOstName=savedBlob.name||'Eigene MP3';
+ }else{
+  audio.src='ost.mp3';
+  state.customOstName='';
+ }
+ syncOstUI();
+}
+function syncOstUI(){
+ const audio=$('ostAudio');
+ const on=(state.musicEnabled!==false)&&!state.muted;
+ if($('toggleOstMusicBtn')){
+  $('toggleOstMusicBtn').textContent=(state.musicEnabled!==false)?'🎵 Musik (OST): An':'🎵 Musik (OST): Aus';
+ }
+ if($('ostSourceStatusText')){
+  $('ostSourceStatusText').textContent=state.customOstName?('Quelle: '+state.customOstName):'Quelle: Standard (ost.mp3)';
+ }
+ if($('removeCustomMp3Btn')){
+  $('removeCustomMp3Btn').disabled=!state.customOstName;
+  $('removeCustomMp3Btn').style.opacity=state.customOstName?'1':'.4';
+ }
+ if(audio){
+  if(on&&!document.hidden){
+   audio.play().catch(()=>{});
+  }else{
+   audio.pause();
+  }
+ }
+}
+if($('toggleOstMusicBtn'))$('toggleOstMusicBtn').onclick=()=>{
+ state.musicEnabled=(state.musicEnabled===false);
+ if(state.musicEnabled&&state.muted){
+  state.muted=false;
+  syncSoundUI();
+ }
+ syncOstUI();
+ save();
+ toast(state.musicEnabled?'Hintergrundmusik aktiviert':'Hintergrundmusik pausiert');
+};
+if($('uploadCustomMp3Btn'))$('uploadCustomMp3Btn').onclick=()=>$('customMp3Input').click();
+if($('customMp3Input'))$('customMp3Input').addEventListener('change',async e=>{
+ const file=e.target.files&&e.target.files[0];
+ if(!file)return;
+ try{
+  await saveCustomOstToDb(file);
+  if(customOstBlobUrl)URL.revokeObjectURL(customOstBlobUrl);
+  customOstBlobUrl=URL.createObjectURL(file);
+  state.customOstName=file.name.slice(0,36);
+  const audio=$('ostAudio');
+  if(audio){
+   audio.src=customOstBlobUrl;
+   if(state.musicEnabled!==false&&!state.muted)audio.play().catch(()=>{});
+  }
+  syncOstUI();
+  save();
+  toast('🎵 Eigene MP3 geladen: '+state.customOstName);
+ }catch(err){
+  toast('MP3 konnte nicht gespeichert werden.');
+ }finally{
+  e.target.value='';
+ }
+});
+if($('removeCustomMp3Btn'))$('removeCustomMp3Btn').onclick=async ()=>{
+ if(!state.customOstName)return;
+ await deleteCustomOstFromDb();
+ if(customOstBlobUrl){URL.revokeObjectURL(customOstBlobUrl);customOstBlobUrl=null;}
+ state.customOstName='';
+ const audio=$('ostAudio');
+ if(audio){
+  audio.src='ost.mp3';
+  if(state.musicEnabled!==false&&!state.muted)audio.play().catch(()=>{});
+ }
+ syncOstUI();
+ save();
+ toast('🎵 Eigene MP3 entfernt – Standard ost.mp3 wieder aktiv');
+};
+// Startet ost.mp3 automatisch bei der ersten Interaktion, sobald Ton aktiv ist
+document.addEventListener('pointerdown',()=>{
+ const audio=$('ostAudio');
+ if(audio&&state.musicEnabled!==false&&!state.muted&&audio.paused){
+  audio.play().catch(()=>{});
+ }
+},{passive:true});
+
+// Samsung Internet Auto-Dark-Mode Erkennung & Gegen-Inversion
+function isSamsungBrowser(){
+ return /SamsungBrowser/i.test(navigator.userAgent||'');
+}
+function applySamsungDarkFix(){
+ const mode=state.samsungDarkMode||'auto';
+ let enableFix=false;
+ if(mode==='on'){
+  enableFix=true;
+ }else if(mode==='off'){
+  enableFix=false;
+ }else{
+  // Auto: Prüfe ob Samsung Browser genutzt wird und ein dunkles Test-Element aufgehellt wird (oder User in Samsung Internet im Dark Mode surft)
+  if(isSamsungBrowser()){
+   const probe=document.createElement('div');
+   probe.style.cssText='position:fixed;top:-99px;width:1px;height:1px;background-color:rgb(8,8,16);pointer-events:none';
+   document.body.appendChild(probe);
+   const rgb=getComputedStyle(probe).backgroundColor||'';
+   probe.remove();
+   const m=rgb.match(/\d+/g);
+   if(m&&Number(m[0])>100){
+    enableFix=true;
+   }
+  }
+ }
+ document.documentElement.classList.toggle('samsung-dark-fix',enableFix);
+ if($('toggleSamsungDarkFixBtn')){
+  const lbl=mode==='on'?'An (Gegen-Filter aktiv)':mode==='off'?'Aus':('Auto'+(enableFix?' (Aktiv)':''));
+  $('toggleSamsungDarkFixBtn').textContent='🌙 Samsung Farb-Umkehr-Schutz: '+lbl;
+ }
+}
+if($('toggleSamsungDarkFixBtn'))$('toggleSamsungDarkFixBtn').onclick=()=>{
+ const order=['auto','on','off'];
+ const next=order[(order.indexOf(state.samsungDarkMode||'auto')+1)%order.length];
+ state.samsungDarkMode=next;
+ applySamsungDarkFix();
+ save();
+ toast(next==='on'?'Samsung Gegen-Filter erzwungen (An)':next==='off'?'Samsung Gegen-Filter deaktiviert (Aus)':'Samsung Gegen-Filter auf Automatisch');
+};
+
+load();initOstPlayer();applySamsungDarkFix();checkAutoDailyLogin();renderOfflineHistory();if(!state.enemyMax)resetEnemy();applyPalette();syncUpgradeValuesUI();syncSoundUI();checkTitleUnlocks();renderTitleOptions();$('paletteSelect').value=state.palette||'raiden';refreshCharacterImage();startOrganicLightning();render();
 let last=Date.now(),saveTimer=0,attackAccumulator=0;
 setInterval(()=>{
  let now=Date.now(),rawDt=Math.max(0,(now-last)/1000);last=now;
@@ -6470,8 +6926,10 @@ document.addEventListener('visibilitychange',()=>{
  document.body.classList.toggle('tab-minimized',document.hidden);
  if(typeof clearArenaAnimations==='function')clearArenaAnimations();
  if(document.hidden){
+  if($('ostAudio'))$('ostAudio').pause();
   save();
  }else{
+  syncOstUI();
   render();
  }
 });
