@@ -79,12 +79,16 @@ header{padding:20px 18px 10px;display:flex;align-items:center;justify-content:sp
  opacity:0;
  transition:opacity .45s ease;
 }
+@keyframes vaelithSwordSparkle{
+ 0%,100%{stroke-dasharray:18 10 8 14;stroke-dashoffset:0;opacity:.75}
+ 50%{stroke-dasharray:22 8 12 10;stroke-dashoffset:-24;opacity:1}
+}
 .character.default-png-active .vaelith-eye-sword-fx{
  opacity:1;
- animation:vaelithEyeSwordPulse 2.6s ease-in-out infinite;
+ animation:vaelithEyeSwordPulse 2.5s ease-in-out infinite;
 }
-.vaelith-svg-eye-glow,.vaelith-svg-sword-glow{
- animation:vaelithEyeSwordPulse 2.4s ease-in-out infinite;
+.character.default-png-active .vaelith-sword-sparks{
+ animation:vaelithSwordSparkle 1.8s linear infinite;
 }
 .lightning{position:absolute;width:54px;height:112px;opacity:0;z-index:12;pointer-events:none;overflow:visible;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 5px #c28aff) drop-shadow(0 0 11px #9038ff88);transform-origin:center;will-change:opacity,transform,filter}
 .lightning.firing-a{animation:arcBurstA var(--dur,.38s) cubic-bezier(.16,.84,.44,1) forwards}
@@ -2350,51 +2354,66 @@ body[data-sky-overload="2"] .sky-tier2-only{
   <path d="M80 28 C67 32 58 49 60 73 C62 88 71 99 80 102 C89 99 98 88 100 73 C102 49 93 32 80 28 Z" fill="url(#hd-void)" stroke="#a879ff55" stroke-width="0.85"/>
   <!-- Slender Neck & Collar Silhouette -->
   <path d="M74 99 L72 110 Q80 114 88 110 L86 99" fill="none" stroke="url(#hd-trim)" stroke-width="0.75" opacity="0.55"/>
-  <!-- Expressive, Feminine Winged Glowing Eyes (mit verstärktem Puls-Leuchteffekt) -->
-  <g class="vaelith-svg-eye-glow">
-   <ellipse cx="68" cy="67" rx="11" ry="5" style="fill:var(--fx-main);opacity:0.42;filter:blur(3px)"/>
-   <ellipse cx="92" cy="67" rx="11" ry="5" style="fill:var(--fx-main);opacity:0.42;filter:blur(3px)"/>
-   <path d="M61 65 Q68 64 75 69 Q68 71 62 68 Z" fill="#ffffff" filter="drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 12px var(--fx-core)) drop-shadow(0 0 18px var(--fx-main))"/>
-   <path d="M99 65 Q92 64 85 69 Q92 71 98 68 Z" fill="#ffffff" filter="drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 12px var(--fx-core)) drop-shadow(0 0 18px var(--fx-main))"/>
-  </g>
+  <!-- Expressive, Feminine Winged Glowing Eyes -->
+  <path d="M61 65 Q68 64 75 69 Q68 71 62 68 Z" fill="#ffffff" filter="drop-shadow(0 0 6px #8fe8ff) drop-shadow(0 0 12px var(--fx-main))"/>
+  <path d="M99 65 Q92 64 85 69 Q92 71 98 68 Z" fill="#ffffff" filter="drop-shadow(0 0 6px #8fe8ff) drop-shadow(0 0 12px var(--fx-main))"/>
   <path class="evo-layer evo-t2" d="M62 66 Q55 59 50 49 M98 66 Q105 59 110 49" fill="none" style="stroke:var(--fx-core,#8fe8ff)" stroke-width="1.3" stroke-linecap="round" filter="drop-shadow(0 0 5px #8fe8ff)"/>
-  <!-- Glowing Sword Nharak & Sword-Crest Clasp at Collar -->
-  <g class="vaelith-svg-sword-glow">
-   <ellipse cx="80" cy="126" rx="10" ry="22" style="fill:var(--fx-main);opacity:0.36;filter:blur(4px)"/>
-   <line x1="80" y1="102" x2="80" y2="154" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" filter="drop-shadow(0 0 6px var(--fx-core)) drop-shadow(0 0 14px var(--fx-main))"/>
-   <line x1="71" y1="115" x2="89" y2="115" stroke="var(--fx-core)" stroke-width="1.5" stroke-linecap="round" filter="drop-shadow(0 0 6px var(--fx-main))"/>
-   <polygon points="80,105 84.5,116 80,134 75.5,116" fill="#ffffff" stroke="var(--fx-main)" stroke-width="1" filter="drop-shadow(0 0 8px #ffffff) drop-shadow(0 0 15px var(--fx-main))"/>
-  </g>
+  <!-- Sword-Crest Clasp Gem at Collar -->
+  <polygon points="80,108 84,117 80,129 76,117" fill="#ffffff" stroke="var(--fx-main)" stroke-width="1" filter="drop-shadow(0 0 7px var(--fx-main))"/>
 </svg><img class="character-image" id="characterImage" src="Vaelith.png" alt="Dein Charakterbild">
-   <!-- Leuchteffekt-Overlay für Vaeliths Augen & ihr Schwert Nharak auf Vaelith.png -->
+   <!-- Präzises Leuchteffekt-Overlay exakt auf den Augen & der diagonalen Klinge des Standard-Porträts (nur aktiv, wenn das PNG-Standardbild genutzt wird) -->
    <svg class="vaelith-eye-sword-fx" id="vaelithEyeSwordFx" viewBox="0 0 160 160" aria-hidden="true">
     <defs>
+     <clipPath id="vPngCircleClip">
+      <circle cx="80" cy="80" r="78"/>
+     </clipPath>
      <radialGradient id="vEyeGlowGrad" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
-      <stop offset="35%" style="stop-color:var(--fx-core,#e0faff);stop-opacity:0.7"/>
-      <stop offset="70%" style="stop-color:var(--fx-main,#c28aff);stop-opacity:0.32"/>
+      <stop offset="32%" style="stop-color:var(--fx-core,#ffd1ff);stop-opacity:0.78"/>
+      <stop offset="68%" style="stop-color:var(--fx-main,#d946ef);stop-opacity:0.42"/>
       <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
      </radialGradient>
-     <linearGradient id="vSwordBeamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
-      <stop offset="30%" style="stop-color:var(--fx-main,#c28aff);stop-opacity:0.45"/>
-      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.88"/>
-      <stop offset="70%" style="stop-color:var(--fx-core,#e0faff);stop-opacity:0.45"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+     <linearGradient id="vSwordEdgeGrad" x1="8%" y1="35%" x2="42%" y2="98%">
+      <stop offset="0%" style="stop-color:var(--fx-core,#ffffff);stop-opacity:0.85"/>
+      <stop offset="45%" style="stop-color:var(--fx-main,#c28aff);stop-opacity:0.95"/>
+      <stop offset="80%" style="stop-color:var(--fx-core,#ffffff);stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:var(--fx-main,#c28aff);stop-opacity:0.75"/>
+     </linearGradient>
+     <linearGradient id="vSwordBevelGlow" x1="0%" y1="32%" x2="46%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--fx-main,#c28aff);stop-opacity:0.15"/>
+      <stop offset="50%" style="stop-color:var(--fx-main,#d946ef);stop-opacity:0.52"/>
+      <stop offset="100%" style="stop-color:var(--fx-sub,#9d4edd);stop-opacity:0.25"/>
      </linearGradient>
     </defs>
-    <!-- Sanfter, leuchtender Augen-Schimmer (Linkes & Rechtes Auge + feine Lichtfunken) -->
-    <ellipse cx="67" cy="64" rx="13" ry="7" fill="url(#vEyeGlowGrad)"/>
-    <ellipse cx="93" cy="64" rx="13" ry="7" fill="url(#vEyeGlowGrad)"/>
-    <path d="M60 64 Q67 61.5 73 65 Q67 66.5 60 64 Z" fill="#ffffff" opacity="0.85"/>
-    <path d="M100 64 Q93 61.5 87 65 Q93 66.5 100 64 Z" fill="#ffffff" opacity="0.85"/>
-    <path d="M62 63 Q55 58 49 52 M98 63 Q105 58 111 52" fill="none" style="stroke:var(--fx-core,#ffffff)" stroke-width="1.1" stroke-linecap="round" opacity="0.75"/>
-    <!-- Leuchtender Schwert-Schimmer & Klingen-Aura (unten/diagonal für Nharak) -->
-    <ellipse cx="80" cy="128" rx="22" ry="26" fill="url(#vEyeGlowGrad)" opacity="0.65"/>
-    <path d="M76 98 L80 156 L84 98 Z" fill="url(#vSwordBeamGrad)" opacity="0.78"/>
-    <line x1="80" y1="96" x2="80" y2="156" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
-    <line x1="68" y1="114" x2="92" y2="114" style="stroke:var(--fx-core,#ffffff)" stroke-width="1.2" stroke-linecap="round" opacity="0.85"/>
-    <polygon points="80,107 83.5,114 80,124 76.5,114" fill="#ffffff" opacity="0.92"/>
+    <g clip-path="url(#vPngCircleClip)">
+     <!-- 1. LINKES AUGE (exakt bei cx=60.5, cy=77.2, leicht geneigt) -->
+     <g transform="rotate(-4 60.5 77.2)">
+      <ellipse cx="60.5" cy="77.2" rx="11.5" ry="5.8" fill="url(#vEyeGlowGrad)"/>
+      <ellipse cx="60.5" cy="77.2" rx="4.4" ry="2.5" fill="#ffffff" opacity="0.72"/>
+      <ellipse cx="60.5" cy="77.2" rx="1.2" ry="2.2" style="fill:var(--fx-core,#ffffff)" opacity="0.95"/>
+      <!-- Feiner Energie-Schimmer am äußeren Augenwinkel -->
+      <path d="M51.5 76.8 Q56 74.6 65.5 76.2" fill="none" style="stroke:var(--fx-core,#ffffff)" stroke-width="0.75" stroke-linecap="round" opacity="0.65"/>
+     </g>
+
+     <!-- 2. RECHTES AUGE (exakt bei cx=99.8, cy=67.1, um -17 Grad entlang der Augenlinie geneigt) -->
+     <g transform="rotate(-17 99.8 67.1)">
+      <ellipse cx="99.8" cy="67.1" rx="12" ry="6.2" fill="url(#vEyeGlowGrad)"/>
+      <ellipse cx="99.8" cy="67.1" rx="4.6" ry="2.6" fill="#ffffff" opacity="0.75"/>
+      <ellipse cx="99.8" cy="67.1" rx="1.2" ry="2.3" style="fill:var(--fx-core,#ffffff)" opacity="0.95"/>
+      <!-- Feiner Energie-Schimmer am äußeren Augenwinkel nach rechts oben -->
+      <path d="M93.5 67.4 Q100 64.5 108.5 65.8" fill="none" style="stroke:var(--fx-core,#ffffff)" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
+     </g>
+
+     <!-- 3. DIAGONALES SCHWERT LINKS UNTEN (verläuft exakt entlang der violetten Klingenkante von (7, 56) nach (67, 157)) -->
+     <!-- Breiter, weicher Klingen-Glow auf der violetten Schneiden-Facette -->
+     <polygon points="5,55 15,59 73,157 59,157" fill="url(#vSwordBevelGlow)"/>
+     <!-- Leuchtender Äther-Klingenstrahl entlang der Lichtkante des Schwertes -->
+     <path d="M7.5 57.5 L24.5 88 L39.2 112 L54.2 136 L66.8 157" fill="none" stroke="url(#vSwordEdgeGrad)" stroke-width="4.2" stroke-linecap="round" opacity="0.62"/>
+     <!-- Scharfer, weiß-leuchtender Blitzkern direkt auf der Klingenschneide -->
+     <path class="vaelith-sword-edge-core" d="M7.5 57.5 L24.5 88 L39.2 112 L54.2 136 L66.8 157" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" opacity="0.92"/>
+     <!-- Feine gezackte Blitz-Funken, die an der Klingenkante entlangtanzen -->
+     <path class="vaelith-sword-sparks" d="M13 67 L17 69 L15 76 L21 81 M29 94 L35 98 L33 105 L40 109 M46 122 L52 126 L50 133 L57 139" fill="none" style="stroke:var(--fx-core,#ffffff)" stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round" opacity="0.82"/>
+    </g>
    </svg>
    <div class="dimension-shatter-lens" id="dimensionShatterLens" aria-hidden="true">
     <svg class="dimension-shatter-svg" viewBox="0 0 160 160">
@@ -2635,14 +2654,14 @@ body[data-sky-overload="2"] .sky-tier2-only{
   <div class="card" style="margin-top:10px">
    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
     <h3 style="font-family:Georgia,serif;margin:0">Charakterbild</h3>
-    <span class="small" id="portraitModeStatusText" style="color:var(--cyan)">Aktiv: Vaelith.png</span>
+    <span class="small" id="portraitModeStatusText" style="color:var(--cyan)">Aktiv: Standardbild</span>
    </div>
-   <p class="setting-note">Standardmäßig nutzt Vaelith <strong>Vaelith.png</strong> inklusive pulsierendem Augen- & Schwert-Leuchteffekt. Du kannst hier jederzeit auf das <strong>alte klassische Bild</strong> umschalten oder ein eigenes Bild hochladen.</p>
+   <p class="setting-note">Wähle zwischen Vaeliths <strong>Standardbild</strong> (mit pulsierendem Augen- & Schwert-Leuchteffekt), dem <strong>alten klassischen Bild</strong> oder lade durch Antippen des Porträts ein eigenes Bild hoch.</p>
    <div class="settings-actions" style="margin-top:10px">
-    <button class="secondary" type="button" id="useVaelithPngBtn">⚡ Standard (Vaelith.png)</button>
+    <button class="secondary" type="button" id="useVaelithPngBtn">⚡ Standardbild</button>
     <button class="secondary" type="button" id="useClassicPortraitBtn">☽ Altes Bild nutzen</button>
    </div>
-   <button class="secondary" type="button" id="removeImageBtn" style="margin-top:8px">✕ Hochgeladenes Bild entfernen (Standard)</button>
+   <button class="secondary" type="button" id="removeImageBtn" style="margin-top:8px">✕ Hochgeladenes Bild entfernen</button>
   </div>
   <div class="card" style="margin-top:10px;border-color:#704052">
    <h3 style="font-family:Georgia,serif;margin:0 0 4px;color:#ffb3c8">Kompletter Reset</h3>
@@ -6077,7 +6096,7 @@ function refreshCharacterImage(){
    if((state.portraitMode||'vaelith_png')==='vaelith_png')stg.classList.add('uploaded','default-png-active');
   };
   if(img.getAttribute('src')!=='Vaelith.png')img.src='Vaelith.png';
-  if($('portraitModeStatusText'))$('portraitModeStatusText').textContent='Aktiv: Vaelith.png (Standard)';
+  if($('portraitModeStatusText'))$('portraitModeStatusText').textContent='Aktiv: Standardbild';
  }
  if($('useVaelithPngBtn'))$('useVaelithPngBtn').style.borderColor=(mode==='vaelith_png')?'var(--cyan)':'';
  if($('useClassicPortraitBtn'))$('useClassicPortraitBtn').style.borderColor=(mode==='classic')?'var(--cyan)':'';
@@ -6142,7 +6161,7 @@ if($('useVaelithPngBtn'))$('useVaelithPngBtn').onclick=()=>{
  state.portraitMode='vaelith_png';
  refreshCharacterImage();
  save();
- toast('⚡ Standardbild aktiv: Vaelith.png (mit Augen- & Schwert-Leuchten)');
+ toast('⚡ Standardbild aktiviert');
 };
 if($('useClassicPortraitBtn'))$('useClassicPortraitBtn').onclick=()=>{
  state.portraitMode='classic';
@@ -6152,15 +6171,15 @@ if($('useClassicPortraitBtn'))$('useClassicPortraitBtn').onclick=()=>{
 };
 $('removeImageBtn').onclick=()=>{
  if(!state.characterImage&&state.portraitMode==='vaelith_png'){
-  toast('Standardbild (Vaelith.png) ist bereits aktiv');
+  toast('Das Standardbild ist bereits aktiv');
   return;
  }
- if(state.characterImage&&!confirm('Das hochgeladene Charakterbild entfernen und auf Vaelith.png zurücksetzen?'))return;
+ if(state.characterImage&&!confirm('Das hochgeladene Charakterbild entfernen und auf das Standardbild zurücksetzen?'))return;
  state.characterImage='';
  state.portraitMode='vaelith_png';
  refreshCharacterImage();
  save();
- toast('Auf Standardbild (Vaelith.png) zurückgesetzt');
+ toast('Auf Standardbild zurückgesetzt');
 };
 $('showResetBtn').onclick=()=>{$('resetPanel').classList.add('open');$('resetConfirmInput').value='';$('confirmResetBtn').disabled=true;$('resetConfirmInput').focus()};
 $('resetConfirmInput').addEventListener('input',()=>{$('confirmResetBtn').disabled=$('resetConfirmInput').value.trim()!=='ALLES LÖSCHEN'});
@@ -8529,11 +8548,11 @@ function startOrganicLightning(){
 const changelogHistoryData=[
  {
   version:'0.6.2',
-  tag:'Aktueller Patch · Vaelith.png als Standardbild, Augen- & Schwert-Leuchteffekt & Umschalter für Altes Bild',
+  tag:'Aktueller Patch · Neues Standard-Porträt mit angepasstem Augen- & Schwert-Leuchten & Umschalter für Altes Bild',
   changes:[
-   'Vaelith.png als neues Standard-Charakterbild: Vaelith nutzt nun standardmäßig die Datei „Vaelith.png“ im Spielordner.',
-   'Pulsierender Leuchteffekt für Augen & Schwert (Nharak): Sowohl über Vaelith.png als auch auf der klassischen Darstellung leuchten Vaeliths Augen und ihre Klinge Nharak dynamisch in den Farben deines aktiven Farbschemas und Titel-Effekts.',
-   'Umschalter in den Einstellungen: Unter „Charakterbild“ kannst du jederzeit per Klick zwischen dem neuen Standardbild („⚡ Standard (Vaelith.png)“), dem alten klassischen Bild („☽ Altes Bild nutzen“) oder einem eigenen hochgeladenen Bild wechseln.'
+   'Neues Standard-Charakterbild: Vaelith nutzt nun standardmäßig ihr neues Anime-Porträt.',
+   'Maßgeschneiderter Leuchteffekt für Augen & Schwert: Wenn das neue Standardbild aktiv ist, leuchten Vaeliths beide violetten Augen sowie die diagonale Klingenschneide ihres Schwertes links unten pulsierend in deiner aktiven Effektfarbe.',
+   'Umschalter in den Einstellungen: Unter „Charakterbild“ kannst du jederzeit zwischen dem neuen Standardbild („⚡ Standardbild“), dem alten klassischen Bild („☽ Altes Bild nutzen“) oder einem eigenen hochgeladenen Bild wechseln.'
   ]
  },
  {
