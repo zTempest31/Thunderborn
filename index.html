@@ -8547,7 +8547,7 @@ const changelogHistoryData=[
   tag:'Aktueller Patch · Neues Standard-Porträt (Augen- & Schwert-Glow), Dynamischer Tab-Soundtrack (Crossfade), 1B-Effekt im Kreis & Auto-Smart-Farm',
   changes:[
    'Neues Standard-Porträt mit maßgeschneidertem Augen- & Schwert-Leuchten: Vaeliths neues Standardbild verfügt über einen exakt auf die Iris (rx=6.5 / ry=3.4 ohne Überstand) und die diagonale Schwertschneide abgestimmten Leuchteffekt in deiner aktiven Effektfarbe. Unter „Charakterbild“ in den Einstellungen kann jederzeit zwischen Standardbild, altem klassischem Bild und eigenem Bild gewechselt werden.',
-   'Dynamischer Multi-Track-Soundtrack mit nahtlosem Crossfade: Der Kampf-Tab spielt exklusiv „ost.mp3“, während alle anderen Tabs (Relikte, Prestige, Chroniken, Einstellungen) „ost2.mp3“ und „ost3.mp3“ abspielen. Beim Tab-Wechsel blendet der neue Track exakt in derselben Zeit (1,2 Sek.) synchron ein, in der der bisherige Track ausblendet.',
+   'Dynamischer Multi-Track-Soundtrack mit nahtlosem Crossfade: Der Kampf-Tab spielt exklusiv „ost.mp3“, während alle anderen Tabs (Relikte, Prestige, Chroniken, Einstellungen) „ost2.mp3“ und „ost3.mp3“ abspielen. Beim Tab-Wechsel sowie beim Wechsel zwischen ost2.mp3 und ost3.mp3 blendet der neue Track über exakt 1,5 Sekunden synchron ein, während der bisherige Track in derselben Zeit (1,5 Sek.) nahtlos ausblendet.',
    '1B Götterfurcht-Effekt strikt innerhalb des Porträt-Kreises: Alle Bruchlinien und Glasfacetten enden exakt am inneren Kreisrand, sodass nichts mehr über den Kreis hinausragt.',
    'Kein Viereck-Auswahlrahmen & kein ＋-Symbol mehr am Charakterbild: Der rechteckige mobile Tap-Highlight- und Fokus-Rahmen sowie das kleine ＋-Icon wurden entfernt.',
    'SSJ2-Blitz-Ausstoß beim Ende der Göttlichen Entladung: Sobald die Göttliche Entladung (bzw. Spährenentfaltung) ausklingt, werden die bio-elektrischen SSJ2-Blitze radial vom Porträt nach außen ausgestoßen.',
@@ -9095,7 +9095,7 @@ setInterval(()=>{
 // === V0.6.1: DYNAMISCHE MULTI-TRACK HINTERGRUNDMUSIK (KAMPF: ost.mp3 · ANDERE TABS: ost2.mp3 & ost3.mp3 MIT NAHTLOSEM CROSSFADE) ===
 let customOstBlobUrl=null;
 const OST_MAX_VOL=0.42;
-const OST_CROSSFADE_MS=1250; // Exakt synchrone Ein- & Ausblendzeit (1,25s)
+const OST_CROSSFADE_MS=1500; // Exakt synchrone Ein- & Ausblendzeit (1,5s)
 let currentOstZone='battle'; // 'battle' oder 'menu'
 let currentMenuTrackIdx=2; // 2 = ost2.mp3, 3 = ost3.mp3
 let ostFadeRafId=null;
@@ -9286,7 +9286,7 @@ async function initOstPlayer(){
   };
   // Nahtloser Vorab-Crossfade kurz vor Track-Ende zwischen ost2.mp3 und ost3.mp3
   a2.ontimeupdate=()=>{
-   if(currentOstZone==='menu'&&currentMenuTrackIdx===2&&!ostTrack3Failed&&a2.duration>4&&(a2.duration-a2.currentTime)<=1.3){
+   if(currentOstZone==='menu'&&currentMenuTrackIdx===2&&!ostTrack3Failed&&a2.duration>4&&(a2.duration-a2.currentTime)<=1.55){
     switchMenuSubTrack(3);
    }
   };
@@ -9302,7 +9302,7 @@ async function initOstPlayer(){
    }
   };
   a3.ontimeupdate=()=>{
-   if(currentOstZone==='menu'&&currentMenuTrackIdx===3&&!ostTrack2Failed&&a3.duration>4&&(a3.duration-a3.currentTime)<=1.3){
+   if(currentOstZone==='menu'&&currentMenuTrackIdx===3&&!ostTrack2Failed&&a3.duration>4&&(a3.duration-a3.currentTime)<=1.55){
     switchMenuSubTrack(2);
    }
   };
