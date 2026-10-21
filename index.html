@@ -42,9 +42,7 @@ header{padding:20px 18px 10px;display:flex;align-items:center;justify-content:sp
 .portrait-hitbox:focus,.portrait-hitbox:focus-visible,.portrait-hitbox:active{outline:none!important}
 .portrait-hitbox .glyph{z-index:1;transform:none}
 .character-image{position:absolute;inset:0;z-index:1;display:none;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%);filter:none;pointer-events:none}
-.portrait-edit{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:4;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#100b19c8;border:1px solid #c28aff88;color:#f2ddff;font-size:15px;opacity:.45;transition:opacity .2s;pointer-events:none}
-.portrait-hitbox:hover .portrait-edit,.portrait-hitbox:focus-visible .portrait-edit{opacity:.95}
-.character.uploaded .glyph{display:none}.character.uploaded .character-image{display:block}
+.portrait-hitbox:hover .portrait-edit,.portrait-hitbox:focus-visible .character.uploaded .glyph{display:none}.character.uploaded .character-image{display:block}
 .lightning{position:absolute;width:54px;height:112px;opacity:0;z-index:12;pointer-events:none;overflow:visible;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 5px #c28aff) drop-shadow(0 0 11px #9038ff88);transform-origin:center;will-change:opacity,transform,filter}
 .lightning.firing-a{animation:arcBurstA var(--dur,.38s) cubic-bezier(.16,.84,.44,1) forwards}
 .lightning.firing-b{animation:arcBurstB var(--dur,.38s) cubic-bezier(.16,.84,.44,1) forwards}
@@ -191,7 +189,6 @@ body{background:radial-gradient(ellipse at 50% -10%,var(--bg-top) 0%,var(--bg-mi
 .stars{background-image:radial-gradient(var(--cyan) 1px,transparent 1.5px),radial-gradient(var(--violet) 1px,transparent 1.5px)!important}
 .stage{color:var(--cyan)!important}
 .portrait-hitbox{border-color:color-mix(in srgb, var(--fx-main) 50%, #f5eeff)!important;background:radial-gradient(circle,var(--panel2),var(--bg))!important;box-shadow:0 0 18px color-mix(in srgb, var(--fx-main) 25%, transparent),inset 0 0 14px var(--bg)!important}
-.portrait-edit{background:color-mix(in srgb, var(--panel) 80%, transparent)!important;border-color:var(--btn-border)!important;color:var(--text)!important}
 .epithet{color:var(--pink)!important}
 .bar{background:var(--panel2)!important}
 .bar>span{background:linear-gradient(90deg,var(--bar-bg1),var(--bar-bg2))!important}
@@ -384,6 +381,15 @@ body.overcharge-active .ssj-aura{
  transform:scale(1.12)!important;
  opacity:1!important;
  filter:drop-shadow(0 0 14px var(--fx-core)) drop-shadow(0 0 26px var(--fx-main));
+}
+@keyframes ssj2ExpelPulse{
+ 0%{transform:scale(1.12);opacity:1;filter:drop-shadow(0 0 18px #ffffff) drop-shadow(0 0 32px var(--fx-main))}
+ 38%{transform:scale(1.30);opacity:1;filter:drop-shadow(0 0 22px var(--fx-core)) drop-shadow(0 0 42px var(--fx-main))}
+ 75%{transform:scale(1.20);opacity:.92;filter:drop-shadow(0 0 14px var(--fx-main))}
+ 100%{transform:scale(1);opacity:.88}
+}
+.ssj-aura.ssj2-expelling{
+ animation:ssj2ExpelPulse .85s cubic-bezier(.16,.84,.44,1) forwards!important;
 }
 body.overcharge-active .portrait-rim{
  border-color:#fff!important;
@@ -2353,7 +2359,7 @@ body[data-sky-overload="2"] .sky-tier2-only{
       </g>
      </g>
     </svg>
-   </div><span class="portrait-edit" aria-hidden="true">＋</span></button>
+   </div></button>
    <svg class="lightning l1" viewBox="0 0 90 140" aria-hidden="true"><path class="bolt-glow" d=""/><path class="bolt-core" d=""/><path class="bolt-branch" d=""/><path class="bolt-micro" d=""/></svg>
    <svg class="lightning l2" viewBox="0 0 90 140" aria-hidden="true"><path class="bolt-glow" d=""/><path class="bolt-core" d=""/><path class="bolt-branch" d=""/><path class="bolt-micro" d=""/></svg>
    <svg class="lightning l3" viewBox="0 0 90 140" aria-hidden="true"><path class="bolt-glow" d=""/><path class="bolt-core" d=""/><path class="bolt-branch" d=""/><path class="bolt-micro" d=""/></svg>
@@ -4861,6 +4867,12 @@ function render(){
   $('stageHoldToggleBtn').textContent=state.holdStage?'🌾 Smart-Farm':'▸ Vorstoß';
  }
  const ocActive=isOvercharged();
+ if(wasOverchargeActiveForSSJ2&&!ocActive){
+  wasOverchargeActiveForSSJ2=false;
+  triggerSSJ2ExpulsionBurst();
+ }else if(ocActive){
+  wasOverchargeActiveForSSJ2=true;
+ }
  const curStacks=Math.min(5,Math.max(0,state.overchargeStacks||0));
  const actStacks=Math.min(5,Math.max(1,state.activeOverchargeStacks||1));
  const hasAnyStack=(!ocActive&&(curStacks>=1||(state.overcharge||0)>=100));
@@ -6148,18 +6160,74 @@ function buildSSJ2CrossPortraitArc(){
  }
  return {mainD,branchD};
 }
+// Baut radial nach außen ausgestoßene SSJ2-Blitze, sobald die Göttliche Entladung endet
+function buildSSJ2OutwardExpelArc(baseAng,pushProgress){
+ const rStart=72+pushProgress*12;
+ const rEnd=92+pushProgress*22+Math.random()*8;
+ const segs=4;
+ let mainD='',branchD='';
+ for(let i=0;i<=segs;i++){
+  const t=i/segs;
+  const r=rStart+(rEnd-rStart)*t;
+  const a=baseAng+(Math.random()-.5)*0.18;
+  const x=100+Math.cos(a)*r;
+  const y=100+Math.sin(a)*r;
+  mainD+=(i===0?'M':' L')+x.toFixed(1)+' '+y.toFixed(1);
+  if(i===2){
+   const ba=a+(Math.random()<.5?0.22:-0.22);
+   const br=r+8+Math.random()*6;
+   const bx=100+Math.cos(ba)*br,by=100+Math.sin(ba)*br;
+   branchD+=`M${x.toFixed(1)} ${y.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)} `;
+  }
+ }
+ return {mainD,branchD};
+}
+let wasOverchargeActiveForSSJ2=false;
+let ssj2ExpelStartAt=0;
+let ssj2ExpelUntil=0;
+function triggerSSJ2ExpulsionBurst(){
+ ssj2ExpelStartAt=Date.now();
+ ssj2ExpelUntil=ssj2ExpelStartAt+850;
+ const svg=$('ssj2AuraSvg');
+ if(svg){
+  svg.classList.remove('ssj2-expelling');
+  void svg.offsetWidth;
+  svg.classList.add('ssj2-expelling');
+  setTimeout(()=>svg.classList.remove('ssj2-expelling'),880);
+ }
+ tickSSJ2BioElectricity();
+}
 function tickSSJ2BioElectricity(){
  if(document.hidden)return;
+ const now=Date.now();
+ const ocNow=isOvercharged();
+ if(wasOverchargeActiveForSSJ2&&!ocNow){
+  wasOverchargeActiveForSSJ2=false;
+  triggerSSJ2ExpulsionBurst();
+  return;
+ }
+ wasOverchargeActiveForSSJ2=ocNow;
+ const isExpelling=(now<ssj2ExpelUntil);
+ const expelProg=isExpelling?Math.min(1,Math.max(0,(now-ssj2ExpelStartAt)/850)):0;
  const reiatsu=getReiatsuLevel(calcFearValue());
- // 1. Kurze, eng anliegende SSJ2-Ring-Funken
+ // 1. Kurze, eng anliegende SSJ2-Ring-Funken (werden beim Ende der Göttlichen Entladung nach außen weggestoßen!)
  for(let idx=1;idx<=3;idx++){
   const gEl=$('ssj2Glow'+idx),cEl=$('ssj2Core'+idx);
   if(!gEl||!cEl)continue;
-  if(idx===3&&reiatsu<2&&!isOvercharged()){
+  if(isExpelling){
+   const startAng=(idx*2.09)+(now%360)*0.01+Math.random()*0.5;
+   const span=(0.24+Math.random()*0.28)*(idx%2===0?1:-1);
+   const rad=82+expelProg*22+Math.random()*5;
+   const pathStr=buildSSJ2ArcPath(startAng,span,rad);
+   gEl.setAttribute('d',pathStr);
+   cEl.setAttribute('d',pathStr);
+   continue;
+  }
+  if(idx===3&&reiatsu<2&&!ocNow){
    gEl.setAttribute('d','');cEl.setAttribute('d','');
    continue;
   }
-  if(Math.random()<(isOvercharged()?.92:0.55+reiatsu*0.06)){
+  if(Math.random()<(ocNow?.92:0.55+reiatsu*0.06)){
    const startAng=Math.random()*Math.PI*2;
    const span=(0.18+Math.random()*0.26)*(Math.random()<.5?1:-1);
    const rad=76+Math.random()*5;
@@ -6171,15 +6239,27 @@ function tickSSJ2BioElectricity(){
    cEl.setAttribute('d','');
   }
  }
- // 2. Kompakte, kurze SSJ2-Funken über dem Charakterbild
+ // 2. Kompakte, kurze SSJ2-Funken über dem Charakterbild (bzw. radial nach außen ausgestoßene Entladungs-Blitze beim Ausklingen)
  for(let cIdx=1;cIdx<=2;cIdx++){
   const cg=$('ssj2CrossGlow'+cIdx),cb=$('ssj2CrossBranch'+cIdx),cc=$('ssj2CrossCore'+cIdx);
   if(!cg||!cb||!cc)continue;
-  if(cIdx===2&&reiatsu<2&&!isOvercharged()){
+  if(isExpelling){
+   const bAng1=Math.random()*Math.PI*2;
+   const bAng2=bAng1+Math.PI*(0.65+Math.random()*0.7);
+   const arc1=buildSSJ2OutwardExpelArc(bAng1,expelProg);
+   const arc2=buildSSJ2OutwardExpelArc(bAng2,expelProg);
+   const mD=arc1.mainD+' '+arc2.mainD;
+   const bD=(arc1.branchD+' '+arc2.branchD).trim();
+   cg.setAttribute('d',mD);
+   cb.setAttribute('d',bD);
+   cc.setAttribute('d',mD);
+   continue;
+  }
+  if(cIdx===2&&reiatsu<2&&!ocNow){
    cg.setAttribute('d','');cb.setAttribute('d','');cc.setAttribute('d','');
    continue;
   }
-  const chance=isOvercharged()?.85:(cIdx===1?(0.42+reiatsu*0.06):(0.25+reiatsu*0.05));
+  const chance=ocNow?.85:(cIdx===1?(0.42+reiatsu*0.06):(0.25+reiatsu*0.05));
   if(Math.random()<chance){
    const {mainD,branchD}=buildSSJ2CrossPortraitArc();
    cg.setAttribute('d',mainD);
@@ -8307,10 +8387,11 @@ function startOrganicLightning(){
 const changelogHistoryData=[
  {
   version:'0.6.1',
-  tag:'Aktueller Patch · 1B-Effekt exakt im Kreis, Runder Handy-Tap ohne Viereck & Auto-Smart-Farm beim Offline-Gehen',
+  tag:'Aktueller Patch · 1B-Effekt im Kreis, SSJ2-Blitz-Ausstoß nach Entladung, Runder Handy-Tap & Auto-Smart-Farm Offline',
   changes:[
    '1B Götterfurcht-Effekt strikt innerhalb des Porträt-Kreises: Alle Bruchlinien und Glasfacetten enden nun exakt am inneren Kreisrand (zusätzlich gesichert durch einen SVG-Kreis-ClipPath und CSS circle-clip), sodass nichts mehr über den Kreis hinausragt.',
-   'Kein Viereck-Auswahlrahmen mehr beim Bildwechsel auf dem Handy: Der rechteckige mobile Tap-Highlight- und Fokus-Rahmen am Charakterbild wurde entfernt und die Hitbox strikt auf die Kreisform begrenzt.',
+   'Kein Viereck-Auswahlrahmen & kein ＋-Symbol mehr am Charakterbild: Der rechteckige mobile Tap-Highlight- und Fokus-Rahmen sowie das kleine ＋-Icon wurden entfernt, sodass das Porträt vollkommen frei und rund bleibt.',
+   'SSJ2-Blitz-Ausstoß beim Ende der Göttlichen Entladung: Sobald die Göttliche Entladung (bzw. Spährenentfaltung) ausklingt, werden die bio-elektrischen SSJ2-Blitze in einer kurzen Druckwelle radial vom Porträt nach außen ausgestoßen.',
    'Automatischer Smart-Farm beim Offline-Gehen: Sobald du das Spiel schließt, minimierst oder offline gehst, schaltet Vaelith automatisch in den Smart-Farm-Modus auf deiner optimalen Farm-Stufe und berechnet auch deine Offline-Erträge nach den Smart-Farm-Raten.'
   ]
  },
