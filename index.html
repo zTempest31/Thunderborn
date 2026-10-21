@@ -41,8 +41,8 @@ header{padding:20px 18px 10px;display:flex;align-items:center;justify-content:sp
 .portrait-hitbox{position:relative;z-index:3;display:grid;place-items:center;width:156px;height:156px;max-width:58vw;max-height:58vw;padding:0;border-radius:50%;clip-path:circle(50% at 50% 50%);-webkit-clip-path:circle(50% at 50% 50%);border:1px solid #e5caff66;background:radial-gradient(circle,#21142d,#0c0913);box-shadow:0 0 22px #c28aff35,inset 0 0 16px #090710;overflow:hidden;cursor:pointer;touch-action:manipulation;isolation:isolate;outline:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .portrait-hitbox:focus,.portrait-hitbox:focus-visible,.portrait-hitbox:active{outline:none!important}
 .portrait-hitbox .glyph{z-index:1;transform:none}
-.character-image{position:absolute;inset:0;z-index:1;display:none;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%);filter:none;pointer-events:none}
-.portrait-hitbox:hover .portrait-edit,.portrait-hitbox:focus-visible .character.uploaded .glyph{display:none}.character.uploaded .character-image{display:block}
+.character-image{position:absolute;inset:0;z-index:2;display:none;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%);filter:none;pointer-events:none}
+.character.uploaded .glyph{display:none!important}.character.uploaded .character-image{display:block!important}
 .lightning{position:absolute;width:54px;height:112px;opacity:0;z-index:12;pointer-events:none;overflow:visible;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 5px #c28aff) drop-shadow(0 0 11px #9038ff88);transform-origin:center;will-change:opacity,transform,filter}
 .lightning.firing-a{animation:arcBurstA var(--dur,.38s) cubic-bezier(.16,.84,.44,1) forwards}
 .lightning.firing-b{animation:arcBurstB var(--dur,.38s) cubic-bezier(.16,.84,.44,1) forwards}
