@@ -2724,13 +2724,17 @@ body.low-power-mode .sky-wrath-overload{
        <ellipse cx="84.3" cy="63.4" rx="1.45" ry="1.0" fill="#ffffff" opacity="0.86"/>
        <ellipse cx="84.3" cy="63.4" rx="0.58" ry="1.25" style="fill:var(--fx-core,#ffffff)" opacity="0.98"/>
       </g>
-      <!-- Breites Runenschwert von oben-rechts (160,18 .. 160,76) zur Parierstange unten-Mitte (56,124 .. 90,148) -->
-      <polygon points="160,18 160,76 90,148 56,124" fill="url(#vSwordBevelGlowRight)" opacity="0.82"/>
-      <path d="M159 21 L133 48 L107 74 L82 100 L60 122" fill="none" stroke="url(#vSwordEdgeGradRight)" stroke-width="4.2" stroke-linecap="round" opacity="0.74"/>
-      <path class="vaelith-sword-edge-core" d="M159 21 L133 48 L107 74 L82 100 L60 122" fill="none" stroke="#ffffff" stroke-width="1.45" stroke-linecap="round" opacity="0.95"/>
-      <!-- Leuchtende Runen-Mittelader des Schwerts -->
-      <path d="M158 46 L132 73 L112 94 L88 119 L74 134" fill="none" stroke="url(#vSwordEdgeGradRight)" stroke-width="2.4" stroke-linecap="round" opacity="0.64"/>
-      <path class="vaelith-sword-sparks" d="M146 34 L139 38 L142 46 L134 51 M118 64 L111 69 L114 77 L106 83 M92 92 L85 97 L88 105 L80 111" fill="none" style="stroke:var(--fx-core,#ffffff)" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" opacity="0.86"/>
+      <!-- Breites Runenschwert exakt innerhalb der beiden Klingenkanten: Oberkante (158,25)->(57,127), Unterkante (158,66)->(83,145), mit dem V-Heft bei (75,119) -->
+      <polygon points="158,25 160,65 83,145 75,119 57,127" fill="url(#vSwordBevelGlowRight)" opacity="0.78"/>
+      <!-- Obere linke Hauptschneide -->
+      <path d="M157 26 L136 47 L112 71 L86 98 L58 126" fill="none" stroke="url(#vSwordEdgeGradRight)" stroke-width="3.8" stroke-linecap="round" opacity="0.78"/>
+      <path class="vaelith-sword-edge-core" d="M157 26 L136 47 L112 71 L86 98 L58 126" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" opacity="0.95"/>
+      <!-- Untere rechte Klingenschneide -->
+      <path d="M158 66 L138 87 L116 110 L98 129 L84 144" fill="none" stroke="url(#vSwordEdgeGradRight)" stroke-width="3.2" stroke-linecap="round" opacity="0.68"/>
+      <path class="vaelith-sword-edge-core" d="M158 66 L138 87 L116 110 L98 129 L84 144" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" opacity="0.88"/>
+      <!-- Leuchtende Runen-Rauten & Mittelader im dunklen Schwertkern -->
+      <path d="M158 45 L134 69 L126 67 L117 77 L119 85 L97 107 L75 129" fill="none" stroke="url(#vSwordEdgeGradRight)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.72"/>
+      <path class="vaelith-sword-sparks" d="M145 38 L139 42 L141 49 L134 54 M126 67 L133 70 L124 79 L117 77 Z M104 80 L98 85 L100 92 L93 98 M78 106 L72 111 L74 118 L67 123" fill="none" style="stroke:var(--fx-core,#ffffff)" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" opacity="0.88"/>
      </g>
      <!-- E) PIXELGENAUER AUGEN- & SCHWERT-LEUCHTEFFEKT FÜR VAELITHALT3 (152885.png -> ARTS/VaelithAlt3.png) -->
      <g id="fxGroupAlt3" style="display:none">
@@ -9671,7 +9675,8 @@ const changelogHistoryData=[
   changes:[
    '60-FPS Kampfanimationen im Standardmodus: Die Kampfbühne läuft im regulären Modus nun mit flüssigen 60 FPS.',
    'Reiner 30-FPS Hitcount-Modus beim Akku-Sparen: Im Akku-Sparmodus werden die Kampfanimationen in der Arena komplett pausiert, während die Schadenszahlen (Hitcounts) mit flüssigen 30 FPS aufsteigen und alle Charakterbild-Effekte unberührt bleiben.',
-   'Maßgeschneiderte Augen- & Schwert-Leuchteffekte für VaelithAlt, VaelithAlt2 & VaelithAlt3: Alle alternativen Porträts (VaelithAlt bis VaelithAlt4) besitzen nun pixelgenau auf ihre jeweilige Iris (ohne Überstehen) und ihr Schwert abgestimmte Leucht- & Blitzfunken-Effekte.'
+   'Maßgeschneiderte Augen- & Schwert-Leuchteffekte für VaelithAlt, VaelithAlt2 & VaelithAlt3: Alle alternativen Porträts (VaelithAlt bis VaelithAlt4) besitzen nun pixelgenau auf ihre jeweilige Iris (ohne Überstehen) und ihr Schwert abgestimmte Leucht- & Blitzfunken-Effekte.',
+   'Präzisions-Korrektur für das Runenschwert von VaelithAlt2: Die obere und untere Klingenschneide, der V-Ausschnitt am goldenen Heft sowie die leuchtende Runen-Rautenader im dunklen Schwertkern von VaelithAlt2 wurden exakt auf die Schwertkontur ausgerichtet.'
   ]
  },
  {
